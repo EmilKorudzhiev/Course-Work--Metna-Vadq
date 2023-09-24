@@ -1,9 +1,11 @@
 package dev.emilkorudzhiev.coursework.fishcatch;
 
 
+import dev.emilkorudzhiev.coursework.comment.Comment;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -57,6 +59,18 @@ public class FishCatch {
     )
     private Long userId;
 
+    @OneToMany(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(
+            name = "fish_catch_id",
+            referencedColumnName = "id"
+    )
+    private List<Comment> comments;
+
+    public FishCatch() {
+    }
+
     public FishCatch(Long id,
                      LocalDate date,
                      Float latitude,
@@ -79,7 +93,16 @@ public class FishCatch {
         this.text = text;
     }
 
-    public FishCatch() {
+    public FishCatch(LocalDate date,
+                     Float latitude,
+                     Float longitude,
+                     String text,
+                     List<Comment> comments) {
+        this.date = date;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.text = text;
+        this.comments = comments;
     }
 
     public Long getId() {
