@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.comment;
 
+import dev.emilkorudzhiev.coursework.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -37,6 +38,15 @@ public class Comment {
             nullable = false
     )
     private LocalDate date;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            insertable = false,
+            updatable = false
+    )
+    private User user;
 
     public Comment() {
     }

@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.user;
 
+import dev.emilkorudzhiev.coursework.comment.Comment;
 import dev.emilkorudzhiev.coursework.fishcatch.FishCatch;
 import jakarta.persistence.*;
 
@@ -60,6 +61,8 @@ public class User {
     )
     private List<FishCatch> fishCatches;
 
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     public User() {
     }
@@ -80,6 +83,18 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.fishCatches = fishCatches;
+    }
+
+    public User(String firstName,
+                String lastName,
+                String email,
+                List<FishCatch> fishCatches,
+                List<Comment> comments) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.fishCatches = fishCatches;
+        this.comments = comments;
     }
 
     public Long getId() {
