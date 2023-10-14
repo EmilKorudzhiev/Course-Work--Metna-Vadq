@@ -14,8 +14,8 @@ public class FishCatchService {
         this.fishCatchRepository = fishCatchRepository;
     }
 
-    public void addNewFishCatch(){
-
+    public void addNewFishCatch(FishCatch fishCatch){
+        fishCatchRepository.save(fishCatch);
     }
 
 }

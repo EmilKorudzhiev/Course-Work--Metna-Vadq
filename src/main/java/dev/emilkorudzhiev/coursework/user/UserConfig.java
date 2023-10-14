@@ -19,7 +19,7 @@ public class UserConfig {
             UserRepository userRepository
     ){
         return args -> {
-
+/*
             Comment comment1 = new Comment(
                     "suglasen",
                     LocalDate.of(2001, Month.DECEMBER, 31)
@@ -56,7 +56,7 @@ public class UserConfig {
                     List.of(ivan,gosho)
             );
 
-
+*/
         };
     }
 }

@@ -1,19 +1,16 @@
 package dev.emilkorudzhiev.coursework.location;
 
 
+import dev.emilkorudzhiev.coursework.enums.LocationType;
 import jakarta.persistence.*;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
+
 @Entity(name = "Location")
 @Table(name = "location")
 public class Location {
-
-    enum Type{
-        STORE,
-        FISHING_PLACE
-    }
 
     @Id
     @SequenceGenerator(
@@ -36,7 +33,7 @@ public class Location {
             nullable = false
     )
     @Enumerated(STRING)
-    private Type type;
+    private LocationType type;
 
     @Column(
             name = "latitude",
@@ -66,7 +63,7 @@ public class Location {
     }
 
 
-    public Location(Type type,
+    public Location(LocationType type,
                     Float latitude,
                     Float longitude,
                     String description,
@@ -79,7 +76,7 @@ public class Location {
     }
 
     public Location(Long id,
-                    Type type,
+                    LocationType type,
                     Float latitude,
                     Float longitude,
                     String description,
@@ -100,11 +97,11 @@ public class Location {
         this.id = id;
     }
 
-    public Type getType() {
+    public LocationType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(LocationType type) {
         this.type = type;
     }
 
