@@ -1,6 +1,9 @@
 package dev.emilkorudzhiev.coursework.user;
 
+import dev.emilkorudzhiev.coursework.auth.AuthenticationService;
+import dev.emilkorudzhiev.coursework.auth.RegisterRequest;
 import dev.emilkorudzhiev.coursework.comment.Comment;
+import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.fishcatch.FishCatch;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,48 +18,30 @@ import java.util.Optional;
 public class UserConfig {
 
     @Bean
-    CommandLineRunner commandLineRunner(
-            UserRepository userRepository
+    public CommandLineRunner commandLineRunner(
+            AuthenticationService authenticationService
     ){
         return args -> {
-/*
-            Comment comment1 = new Comment(
-                    "suglasen",
-                    LocalDate.of(2001, Month.DECEMBER, 31)
-            );
 
-            FishCatch fishCatch1 = new FishCatch(
-                    LocalDate.of(2000, Month.DECEMBER, 31),
-                    1.0F,
-                    0.05F,
-                    "vij kva qka riba",
-                    List.of(comment1)
-            );
-            FishCatch fishCatch2 = new FishCatch(
-                    LocalDate.of(2550, Month.JANUARY, 18),
-                    1.0F,
-                    0.05F,
-                    "vij kva qka riba bratochka"
-            );
+            var admin = RegisterRequest.builder()
+                    .firstName("Admin")
+                    .lastName("Admin")
+                    .email("Admin@abv.bg")
+                    .password("1234")
+                    .role(Role.ADMIN)
+                    .build();
+            System.out.println("Admin token: " + authenticationService.register(admin).getToken());
 
-            User ivan = new User(
-                    "Ivan",
-                    "Ivanov",
-                    "Ivan@gmail.com"
-            );
 
-            User gosho = new User(
-                    "Gosho",
-                    "Goshev",
-                    "Gosho@gmail.com",
-                    List.of(fishCatch1,fishCatch2)
-            );
+            var user = RegisterRequest.builder()
+                    .firstName("User")
+                    .lastName("User")
+                    .email("User@abv.bg")
+                    .password("1234")
+                    .role(Role.USER)
+                    .build();
+            System.out.println("User token: " + authenticationService.register(user).getToken());
 
-            userRepository.saveAll(
-                    List.of(ivan,gosho)
-            );
-
-*/
         };
     }
 }

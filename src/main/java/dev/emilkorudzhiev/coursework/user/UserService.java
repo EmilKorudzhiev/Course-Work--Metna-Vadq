@@ -1,7 +1,13 @@
 package dev.emilkorudzhiev.coursework.user;
 
+import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,65 +15,77 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    SecurityContext securityContext = SecurityContextHolder.getContext();
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public Optional<User> getSelf() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findUserByEmail(username);
+    }
+
+    public Optional<User> getUser(Long userId) {
+        return userRepository.findById(userId);
     }
 
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
-    public void addNewUser(User user) {
-        Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
-        if (userByEmail.isPresent()) {
-            throw new IllegalStateException("email taken");
+    public boolean deleteUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            userRepository.deleteById(userId);
+            return true;
+        } else {
+            return false;
         }
-
-        userRepository.save(user);
-    }
-
-    public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalStateException(
-                        "User id: " + userId + " does not exists"));
-
-        userRepository.deleteById(userId);
     }
 
     @Transactional
-    public void updateUser(Long userId,
+    public boolean updateUser(Long userId,
                            String firstName,
                            String lastName,
                            String email) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalStateException(
-                        "User id: " + userId + " does not exists"));
+        boolean updated = false;
 
-        if(firstName != null &&
-                firstName.length() > 0 &&
-                !Objects.equals(user.getFirstName(), firstName)) {
-            user.setFirstName(firstName);
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        User user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        } else {
+            return updated;
         }
 
-        if(lastName != null &&
-                lastName.length() > 0 &&
-                !Objects.equals(user.getLastName(), lastName)) {
-            user.setLastName(lastName);
-        }
-
-        if(email != null &&
-                email.length() > 0 &&
-                !Objects.equals(user.getEmail(), email) ) {
-            Optional<User> userOptional = userRepository.findUserByEmail(email);
-            if(userOptional.isPresent()) {
-                throw new IllegalStateException("email taken");
+        if (email != null &&
+                !email.isEmpty() &&
+                !Objects.equals(user.getEmail(), email)) {
+            userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isPresent()) {
+                throw new EmailTakenException("email taken");
             }
             user.setEmail(email);
+            updated = true;
         }
+
+        if (firstName != null &&
+                !firstName.isEmpty() &&
+                !Objects.equals(user.getFirstName(), firstName)) {
+            user.setFirstName(firstName);
+            updated = true;
+        }
+
+        if (lastName != null &&
+                !lastName.isEmpty() &&
+                !Objects.equals(user.getLastName(), lastName)) {
+            user.setLastName(lastName);
+            updated = true;
+        }
+
+        return updated;
     }
 }
