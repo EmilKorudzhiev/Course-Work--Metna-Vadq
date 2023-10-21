@@ -19,8 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Optional<UserDto> getSelf() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> userOptional = userRepository.findUserByEmail(username);
         return userOptional.map(UserDto::new);
     }
@@ -36,8 +35,7 @@ public class UserService {
     }
 
     public boolean deleteSelf() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> userOptional = userRepository.findUserByEmail(username);
         if (userOptional.isPresent()) {
             userRepository.deleteById(userOptional.get().getId());

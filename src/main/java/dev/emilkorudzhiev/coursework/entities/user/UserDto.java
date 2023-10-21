@@ -20,7 +20,6 @@ public class UserDto {
     private String email;
     private Role role;
     private List<FishCatch> fishCatches;
-    private List<Comment> comments;
 
 
     public UserDto(User user) {
@@ -30,7 +29,6 @@ public class UserDto {
         this.email = user.getEmail();
         this.role = user.getRole();
         this.fishCatches = user.getFishCatches();
-        this.comments = user.getComments();
     }
 
 }
