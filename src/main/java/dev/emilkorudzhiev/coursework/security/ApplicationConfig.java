@@ -1,6 +1,6 @@
 package dev.emilkorudzhiev.coursework.security;
 
-import dev.emilkorudzhiev.coursework.user.UserRepository;
+import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

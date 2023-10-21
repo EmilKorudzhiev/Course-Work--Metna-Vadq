@@ -1,6 +1,6 @@
-package dev.emilkorudzhiev.coursework.comment;
+package dev.emilkorudzhiev.coursework.entities.comment;
 
-import dev.emilkorudzhiev.coursework.user.User;
+import dev.emilkorudzhiev.coursework.entities.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

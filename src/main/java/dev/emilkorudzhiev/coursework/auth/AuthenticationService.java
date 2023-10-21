@@ -2,8 +2,8 @@ package dev.emilkorudzhiev.coursework.auth;
 
 import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.security.JwtService;
-import dev.emilkorudzhiev.coursework.user.User;
-import dev.emilkorudzhiev.coursework.user.UserRepository;
+import dev.emilkorudzhiev.coursework.entities.user.User;
+import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +26,24 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .build();
+        userRepository.save(user);
+        var jwtToken = jwtService.generateJwtToken(user);
+
+        return AuthenticationResponse
+                .builder()
+                .token(jwtToken)
+                .build();
+    }
+
+    //For registering other roles
+    public AuthenticationResponse registerWithRole(RegisterRequest request) {
+        var user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
         userRepository.save(user);
@@ -36,6 +54,7 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(

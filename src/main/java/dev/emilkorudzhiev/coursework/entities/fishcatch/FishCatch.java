@@ -1,7 +1,7 @@
-package dev.emilkorudzhiev.coursework.fishcatch;
+package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 
-import dev.emilkorudzhiev.coursework.comment.Comment;
+import dev.emilkorudzhiev.coursework.entities.comment.Comment;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

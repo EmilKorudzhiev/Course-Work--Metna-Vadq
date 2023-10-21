@@ -1,15 +1,14 @@
-package dev.emilkorudzhiev.coursework.user;
+package dev.emilkorudzhiev.coursework.entities.user;
 
-import dev.emilkorudzhiev.coursework.comment.Comment;
+import dev.emilkorudzhiev.coursework.entities.comment.Comment;
 import dev.emilkorudzhiev.coursework.enums.Role;
-import dev.emilkorudzhiev.coursework.fishcatch.FishCatch;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.location;
+package dev.emilkorudzhiev.coursework.entities.location;
 
 
 import dev.emilkorudzhiev.coursework.enums.LocationType;

@@ -1,18 +1,11 @@
-package dev.emilkorudzhiev.coursework.user;
+package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.auth.AuthenticationService;
 import dev.emilkorudzhiev.coursework.auth.RegisterRequest;
-import dev.emilkorudzhiev.coursework.comment.Comment;
 import dev.emilkorudzhiev.coursework.enums.Role;
-import dev.emilkorudzhiev.coursework.fishcatch.FishCatch;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.List;
-import java.util.Optional;
 
 @Configuration
 public class UserConfig {
@@ -30,7 +23,7 @@ public class UserConfig {
                     .password("1234")
                     .role(Role.ADMIN)
                     .build();
-            System.out.println("Admin token: " + authenticationService.register(admin).getToken());
+            System.out.println("Admin token: " + authenticationService.registerWithRole(admin).getToken());
 
 
             var user = RegisterRequest.builder()
@@ -40,7 +33,7 @@ public class UserConfig {
                     .password("1234")
                     .role(Role.USER)
                     .build();
-            System.out.println("User token: " + authenticationService.register(user).getToken());
+            System.out.println("User token: " + authenticationService.registerWithRole(user).getToken());
 
         };
     }

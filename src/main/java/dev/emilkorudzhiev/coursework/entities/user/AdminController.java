@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.user;
+package dev.emilkorudzhiev.coursework.entities.user;
 
 
 import org.springframework.security.access.prepost.PreAuthorize;

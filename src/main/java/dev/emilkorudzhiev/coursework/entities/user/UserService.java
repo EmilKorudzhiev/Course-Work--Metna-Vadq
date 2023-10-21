@@ -1,13 +1,11 @@
-package dev.emilkorudzhiev.coursework.user;
+package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,21 +17,39 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    SecurityContext securityContext = SecurityContextHolder.getContext();
 
-    public Optional<User> getSelf() {
+    public Optional<UserDto> getSelf() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return userRepository.findUserByEmail(username);
+        Optional<User> userOptional = userRepository.findUserByEmail(username);
+        return userOptional.map(UserDto::new);
     }
 
-    public Optional<User> getUser(Long userId) {
-        return userRepository.findById(userId);
+    public Optional<UserDto> getUser(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        return optionalUser.map(UserDto::new);
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getUsers() {
+        List<User> userList = userRepository.findAll();
+        return userList.stream().map(UserDto::new).toList();
     }
+
+    public boolean deleteSelf() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> userOptional = userRepository.findUserByEmail(username);
+        if (userOptional.isPresent()) {
+            userRepository.deleteById(userOptional.get().getId());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+
 
     public boolean deleteUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
