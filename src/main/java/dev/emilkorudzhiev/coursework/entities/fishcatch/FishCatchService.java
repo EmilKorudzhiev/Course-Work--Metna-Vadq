@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
+import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,16 +27,27 @@ public class FishCatchService {
 
     public void addNewFishCatch(FishCatchRequest request){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long userId = userRepository.findUserByEmail(username).get().getId();
+        User user = userRepository.findUserByEmail(username).get();
         FishCatch fishCatch = FishCatch
                 .builder()
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .text(request.getText())
                 .date(OffsetDateTime.now().toZonedDateTime().toOffsetDateTime())
-                .userId(userId)
+                .user(user)
                 .build();
         fishCatchRepository.save(fishCatch);
     }
 
+    public boolean deleteFishCatch(Long fishCatchId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<User> user = userRepository.findUserByEmail(username);
+        Optional<FishCatch> fishCatch = fishCatchRepository.findById(fishCatchId);
+        if (user.get().getId() != fishCatch.get().getUser().getId() || fishCatchId.describeConstable().isEmpty()) {
+            return false;
+        }else {
+            fishCatchRepository.deleteById(fishCatchId);
+            return true;
+        }
+    }
 }

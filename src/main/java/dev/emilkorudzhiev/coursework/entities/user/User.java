@@ -77,13 +77,7 @@ public class User implements UserDetails {
     @Enumerated(STRING)
     private Role role;
 
-    @OneToMany(
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
+    @OneToMany(mappedBy = "user")
     private List<FishCatch> fishCatches;
 
     @OneToMany(mappedBy = "user")

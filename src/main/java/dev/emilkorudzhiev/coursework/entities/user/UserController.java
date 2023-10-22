@@ -18,21 +18,21 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<UserDto> getSelf() {
-        Optional<UserDto> user = userService.getSelf();
+    public ResponseEntity<FullUserDto> getSelf() {
+        Optional<FullUserDto> user = userService.getSelf();
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping(path = "{userId}")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<UserDto> getUser(@PathVariable("userId") Long userId) {
-        Optional<UserDto> user = userService.getUser(userId);
+    public ResponseEntity<FullUserDto> getUser(@PathVariable("userId") Long userId) {
+        Optional<FullUserDto> user = userService.getUser(userId);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping(path = "/all")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<List<UserDto>> getUsers() {
+    public ResponseEntity<List<FullUserDto>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }
 

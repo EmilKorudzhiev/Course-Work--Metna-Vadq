@@ -2,6 +2,7 @@ package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 
 import dev.emilkorudzhiev.coursework.entities.comment.Comment;
+import dev.emilkorudzhiev.coursework.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,10 +64,14 @@ public class FishCatch {
     )
     private String text;
 
-    @Column(
-            name = "user_id"
+    @ManyToOne
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            nullable = false,
+            updatable = false
     )
-    private Long userId;
+    private User user;
 
     @OneToMany(
             cascade = CascadeType.ALL

@@ -1,6 +1,7 @@
 package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 import dev.emilkorudzhiev.coursework.entities.comment.Comment;
+import dev.emilkorudzhiev.coursework.entities.user.PartialUserDto;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -16,7 +17,7 @@ public class FishCatchDto {
     private Float latitude;
     private Float longitude;
     private String text;
-    private Long userId;
+    private PartialUserDto user;
     private List<Comment> comments;
 
     public FishCatchDto(FishCatch fishCatch) {
@@ -25,7 +26,7 @@ public class FishCatchDto {
         this.latitude = fishCatch.getLatitude();
         this.longitude = fishCatch.getLongitude();
         this.text = fishCatch.getText();
-        this.userId = fishCatch.getUserId();
+        this.user = new PartialUserDto(fishCatch.getUser());
         this.comments = fishCatch.getComments();
     }
 }

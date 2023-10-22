@@ -33,6 +33,13 @@ public class FishCatchController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @DeleteMapping("{fishCatchId}")
+    @PreAuthorize("hasAnyAuthority('admin:delete', 'user:delete')")
+    public ResponseEntity<Void> deleteFishCatch(@PathVariable("fishCatchId") Long fishCatchId) {
+        boolean deleted = fishCatchService.deleteFishCatch(fishCatchId);
+        return deleted ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.badRequest().build();
+    }
 
 }

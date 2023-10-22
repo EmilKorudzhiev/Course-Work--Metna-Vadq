@@ -2,11 +2,19 @@ package dev.emilkorudzhiev.coursework.entities.comment;
 
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Comment")
 @Table(name = "comment")
 public class Comment {
@@ -43,41 +51,9 @@ public class Comment {
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
-            insertable = false,
-            updatable = false
+            updatable = false,
+            nullable = false
     )
     private User user;
 
-    public Comment() {
-    }
-
-    public Comment(String text,
-                   LocalDate date) {
-        this.text = text;
-        this.date = date;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 }

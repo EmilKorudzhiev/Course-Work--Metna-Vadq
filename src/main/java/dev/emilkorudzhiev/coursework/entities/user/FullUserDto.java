@@ -1,6 +1,5 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
-import dev.emilkorudzhiev.coursework.entities.comment.Comment;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDto {
+public class FullUserDto {
 
     private Long id;
     private String firstName;
@@ -22,7 +21,7 @@ public class UserDto {
     private List<FishCatch> fishCatches;
 
 
-    public UserDto(User user) {
+    public FullUserDto(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

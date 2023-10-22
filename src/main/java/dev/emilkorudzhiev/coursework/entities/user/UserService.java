@@ -3,8 +3,6 @@ package dev.emilkorudzhiev.coursework.entities.user;
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +16,20 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public Optional<UserDto> getSelf() {
+    public Optional<FullUserDto> getSelf() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> userOptional = userRepository.findUserByEmail(username);
-        return userOptional.map(UserDto::new);
+        return userOptional.map(FullUserDto::new);
     }
 
-    public Optional<UserDto> getUser(Long userId) {
+    public Optional<FullUserDto> getUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        return optionalUser.map(UserDto::new);
+        return optionalUser.map(FullUserDto::new);
     }
 
-    public List<UserDto> getUsers() {
+    public List<FullUserDto> getUsers() {
         List<User> userList = userRepository.findAll();
-        return userList.stream().map(UserDto::new).toList();
+        return userList.stream().map(FullUserDto::new).toList();
     }
 
     public boolean deleteSelf() {
