@@ -3,11 +3,20 @@ package dev.emilkorudzhiev.coursework.entities.location;
 
 import dev.emilkorudzhiev.coursework.enums.LocationType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Location")
 @Table(name = "location")
 public class Location {
@@ -36,16 +45,11 @@ public class Location {
     private LocationType type;
 
     @Column(
-            name = "latitude",
+            name = "coordinates",
+            columnDefinition = "geography(Point,4326)",
             nullable = false
     )
-    private Float latitude;
-
-    @Column(
-            name = "longitude",
-            nullable = false
-    )
-    private Float longitude;
+    private Point coordinates;
 
     @Column(
             name = "description",
@@ -59,93 +63,4 @@ public class Location {
     )
     private boolean approved;
 
-    public Location() {
-    }
-
-
-    public Location(LocationType type,
-                    Float latitude,
-                    Float longitude,
-                    String description,
-                    boolean approved) {
-        this.type = type;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.description = description;
-        this.approved = approved;
-    }
-
-    public Location(Long id,
-                    LocationType type,
-                    Float latitude,
-                    Float longitude,
-                    String description,
-                    boolean approved) {
-        this.id = id;
-        this.type = type;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.description = description;
-        this.approved = approved;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocationType getType() {
-        return type;
-    }
-
-    public void setType(LocationType type) {
-        this.type = type;
-    }
-
-    public Float getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Float latitude) {
-        this.latitude = latitude;
-    }
-
-    public Float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Float longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isApproved() {
-        return approved;
-    }
-
-    public void setApproved(boolean approved) {
-        this.approved = approved;
-    }
-
-    @Override
-    public String toString() {
-        return "Location{" +
-                "id=" + id +
-                ", type=" + type +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", description='" + description + '\'' +
-                ", approved=" + approved +
-                '}';
-    }
 }

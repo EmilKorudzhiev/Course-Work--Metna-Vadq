@@ -23,7 +23,7 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @AllArgsConstructor
 @Entity(name = "User")
 @Table(
-        name = "user",
+        name = "user_",
         uniqueConstraints = {
                 @UniqueConstraint(name = "user_email_unique", columnNames = "email")
         }
@@ -77,10 +77,16 @@ public class User implements UserDetails {
     @Enumerated(STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+            mappedBy = "user",
+            cascade=CascadeType.ALL
+    )
     private List<FishCatch> fishCatches;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+            mappedBy = "user",
+            cascade=CascadeType.ALL
+    )
     private List<Comment> comments;
 
 

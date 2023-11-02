@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.entities.fishcatch;
+package dev.emilkorudzhiev.coursework.entities.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FishCatchRequest {
-    private double latitude;
-    private double longitude;
+public class CommentRequest {
+    private Long fishCatchId;
     private String text;
 }

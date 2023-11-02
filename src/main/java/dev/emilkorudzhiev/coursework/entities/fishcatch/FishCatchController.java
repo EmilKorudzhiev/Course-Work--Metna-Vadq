@@ -26,10 +26,10 @@ public class FishCatchController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
-    public ResponseEntity<Void> newFishCatch(
+    public ResponseEntity<Void> postFishCatch(
             @RequestBody FishCatchRequest request
     ) {
-        fishCatchService.addNewFishCatch(request);
+        fishCatchService.postFishCatch(request);
         return ResponseEntity.noContent().build();
     }
 

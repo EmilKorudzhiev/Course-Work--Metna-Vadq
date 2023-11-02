@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.comment;
 
+import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -45,7 +47,7 @@ public class Comment {
             name = "date",
             nullable = false
     )
-    private LocalDate date;
+    private OffsetDateTime date;
 
     @ManyToOne
     @JoinColumn(
@@ -55,5 +57,14 @@ public class Comment {
             nullable = false
     )
     private User user;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "fish_catch_id",
+            referencedColumnName = "id",
+            nullable = false,
+            updatable = false
+    )
+    private FishCatch fishCatch;
 
 }

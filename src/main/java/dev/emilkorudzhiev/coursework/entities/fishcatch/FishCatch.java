@@ -8,9 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 import java.sql.Timestamp;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -44,19 +44,14 @@ public class FishCatch {
             name = "date",
             nullable = false
     )
-    private OffsetDateTime date;
+    private Timestamp date;
 
     @Column(
-            name = "latitude",
+            name = "coordinates",
+            columnDefinition = "geography(Point,4326)",
             nullable = false
     )
-    private Float latitude;
-
-    @Column(
-            name = "longitude",
-            nullable = false
-    )
-    private Float longitude;
+    private Point coordinates;
 
     @Column(
             name = "text",
@@ -74,11 +69,8 @@ public class FishCatch {
     private User user;
 
     @OneToMany(
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(
-            name = "fish_catch_id",
-            referencedColumnName = "id"
+            mappedBy = "fishCatch",
+            cascade=CascadeType.ALL
     )
     private List<Comment> comments;
 
