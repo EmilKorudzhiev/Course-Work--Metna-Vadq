@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/course-work
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  error:
+    include-message: always
+
+application:
+  security:
+    jwt:
+      secret-key: 316c0a2a82b1cda7e48bfd32737b7d38043c574be0cbf92180f7a57fb35e5b40
+      expiration: 300000 # 5 min
+      refresh-token:
+        expiration: 86400000 # 1 day

@@ -12,11 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +24,13 @@ public class FishCatchService {
     private final FishCatchRepository fishCatchRepository;
     private final UserRepository userRepository;
 
-    public Optional<FishCatchDto> getFishClassById(Long fishCatchId) {
+    public Optional<FishCatchDto> getFishCatchById(Long fishCatchId) {
         return fishCatchRepository.findById(fishCatchId).map(FishCatchDto::new);
+    }
+
+    public Optional<List<FishCatchDto>> getFishCatchesInRadius(SearchRadiusRequest request) {
+        Optional<List<FishCatch>> fishCatches =  fishCatchRepository.findFishCatchesInRadius(request.getLatitude(), request.getLongitude(), request.getDistance());
+        return fishCatches.map(catches -> catches.stream().map(FishCatchDto::new).collect(Collectors.toList()));
     }
 
     public void postFishCatch(FishCatchRequest request){
@@ -35,7 +38,7 @@ public class FishCatchService {
         User user = userRepository.findUserByEmail(username).get();
         FishCatch fishCatch = FishCatch
                 .builder()
-                .coordinates(new GeometryFactory().createPoint(new Coordinate(request.getLatitude(), request.getLongitude())))
+                .coordinates(new GeometryFactory().createPoint(new Coordinate(request.getLongitude(), request.getLatitude())))
                 .text(request.getText())
                 .date(Timestamp.from(Instant.now()))
                 .user(user)
@@ -54,4 +57,5 @@ public class FishCatchService {
             return true;
         }
     }
+
 }

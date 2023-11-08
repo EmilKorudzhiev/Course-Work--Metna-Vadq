@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
+import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import lombok.Getter;

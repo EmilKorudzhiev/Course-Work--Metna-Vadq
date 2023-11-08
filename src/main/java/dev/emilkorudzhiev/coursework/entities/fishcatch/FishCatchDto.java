@@ -3,10 +3,8 @@ package dev.emilkorudzhiev.coursework.entities.fishcatch;
 import dev.emilkorudzhiev.coursework.entities.comment.CommentDto;
 import dev.emilkorudzhiev.coursework.entities.user.PartialUserDto;
 import lombok.*;
-import org.locationtech.jts.geom.Coordinate;
 
 import java.sql.Timestamp;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -16,8 +14,8 @@ public class FishCatchDto {
 
     private Long id;
     private Timestamp date;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private String text;
     private PartialUserDto user;
     private List<CommentDto> comments;
@@ -25,10 +23,11 @@ public class FishCatchDto {
     public FishCatchDto(FishCatch fishCatch) {
         this.id = fishCatch.getId();
         this.date = fishCatch.getDate();
-        this.latitude = fishCatch.getCoordinates().getCoordinate().getX();
-        this.longitude = fishCatch.getCoordinates().getCoordinate().getY();
+        this.latitude = fishCatch.getCoordinates().getCoordinate().getY();
+        this.longitude = fishCatch.getCoordinates().getCoordinate().getX();
         this.text = fishCatch.getText();
         this.user = new PartialUserDto(fishCatch.getUser());
         this.comments = fishCatch.getComments().stream().map(CommentDto::new).toList();
     }
+
 }

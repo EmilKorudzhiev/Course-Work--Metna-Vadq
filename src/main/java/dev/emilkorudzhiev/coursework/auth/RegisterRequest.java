@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
+    @JsonProperty("first-name")
     private String firstName;
+    @JsonProperty("last-name")
     private String lastName;
     private String email;
     private String password;

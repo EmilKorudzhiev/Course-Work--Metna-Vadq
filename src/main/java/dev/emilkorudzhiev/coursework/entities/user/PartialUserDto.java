@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
+import dev.emilkorudzhiev.coursework.entities.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

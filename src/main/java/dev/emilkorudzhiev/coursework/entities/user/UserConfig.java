@@ -23,7 +23,9 @@ public class UserConfig {
                     .password("1234")
                     .role(Role.ADMIN)
                     .build();
-            System.out.println("Admin token: " + authenticationService.registerWithRole(admin).getToken());
+            var authAdmin = authenticationService.registerWithRole(admin);
+            System.out.println("Admin access token: " + authAdmin.getAccessToken());
+            System.out.println("Admin refresh token: " + authAdmin.getRefreshToken());
 
 
             var user = RegisterRequest.builder()
@@ -33,7 +35,9 @@ public class UserConfig {
                     .password("1234")
                     .role(Role.USER)
                     .build();
-            System.out.println("User token: " + authenticationService.registerWithRole(user).getToken());
+            var authUser = authenticationService.registerWithRole(user);
+            System.out.println("User access token: " + authUser.getAccessToken());
+            System.out.println("User refresh token: " + authUser.getRefreshToken());
 
         };
     }

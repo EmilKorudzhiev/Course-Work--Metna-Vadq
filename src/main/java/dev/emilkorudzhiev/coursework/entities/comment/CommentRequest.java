@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.comment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentRequest {
+    @JsonProperty("fish-catch-id")
     private Long fishCatchId;
     private String text;
 }
