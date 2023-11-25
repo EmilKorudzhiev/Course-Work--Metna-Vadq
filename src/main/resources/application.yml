@@ -25,3 +25,15 @@ application:
       expiration: 300000 # 5 min
       refresh-token:
         expiration: 86400000 # 1 day
+
+#SETUP ALL THINGS
+cloud:
+  aws:
+    region: eu-north-1
+    s3:
+      buckets:
+        users: course-work-users
+        fishCatches: course-work-fish-catches
+        locations: course-work-locations
+      max-file-size: 8388608 #8MB
+

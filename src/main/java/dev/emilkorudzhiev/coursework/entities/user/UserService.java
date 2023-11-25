@@ -1,25 +1,46 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
+import dev.emilkorudzhiev.coursework.aws.s3.S3Buckets;
+import dev.emilkorudzhiev.coursework.aws.s3.S3Service;
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final S3Service s3Service;
+    private final S3Buckets s3Buckets;
+
+
+    private Optional<User> getCurrentUser() {
+        return userRepository.findUserByEmail(getCurrentUserEmail());
+    }
+
+    private String getCurrentUserEmail() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    private Long getCurrentUserId() {
+        Optional<User> userOptional = userRepository.findUserByEmail(getCurrentUserEmail());
+        return userOptional.get().getId();
+    }
+
+
 
     public Optional<FullUserDto> getSelf() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> userOptional = userRepository.findUserByEmail(username);
-        return userOptional.map(FullUserDto::new);
+        return getCurrentUser().map(FullUserDto::new);
     }
 
     public Optional<FullUserDto> getUser(Long userId) {
@@ -33,15 +54,34 @@ public class UserService {
     }
 
     public boolean deleteSelf() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> userOptional = userRepository.findUserByEmail(username);
-        if (userOptional.isPresent()) {
-            userRepository.deleteById(userOptional.get().getId());
+        Optional<User> user = getCurrentUser();
+        if (user.isPresent()) {
+            userRepository.deleteById(user.get().getId());
             return true;
         } else {
             return false;
         }
     }
+
+
+    public void uploadUserProfilePicture(MultipartFile file) {
+        Optional<User> user = getCurrentUser();
+        String userId = user.get().getId().toString();
+        String imageId = UUID.randomUUID().toString();
+        try {
+            s3Service.putObject(
+                  s3Buckets.getUsers(),
+                    "profile-images/%s/%s".formatted(userId, imageId),
+                    file.getBytes()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //save to DB
+    }
+
+
+
 
 
 
@@ -100,4 +140,5 @@ public class UserService {
 
         return updated;
     }
+
 }

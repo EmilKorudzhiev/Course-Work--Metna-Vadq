@@ -1,9 +1,11 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,16 @@ public class UserController {
                 : ResponseEntity.notFound().build();
     }
 
-
+    @PostMapping(
+            value = "/profile-image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
+    public ResponseEntity<Void> uploadUserProfileImage(
+            @RequestParam("file")MultipartFile file
+            ) {
+        userService.uploadUserProfilePicture(file);
+    }
 
 
 //todo fix this make admin only
