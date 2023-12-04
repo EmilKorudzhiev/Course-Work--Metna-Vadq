@@ -1,13 +1,14 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
-import dev.emilkorudzhiev.coursework.entities.user.User;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.FullFishCatchDto;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
 import dev.emilkorudzhiev.coursework.enums.Role;
-import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,8 +19,9 @@ public class FullUserDto {
     private String firstName;
     private String lastName;
     private String email;
+    private UUID profilePicture;
     private Role role;
-    private List<FishCatch> fishCatches;
+    private List<PartialFishCatchDto> fishCatches;
 
 
     public FullUserDto(User user) {
@@ -27,8 +29,9 @@ public class FullUserDto {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
+        this.profilePicture = user.getProfilePicture();
         this.role = user.getRole();
-        this.fishCatches = user.getFishCatches();
+        this.fishCatches = user.getFishCatches().stream().map(PartialFishCatchDto::new).toList();
     }
 
 }

@@ -5,6 +5,7 @@ import dev.emilkorudzhiev.coursework.aws.s3.S3Service;
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    @Value("${cloud.aws.s3.max-file-size}")
+    private int maxImageSize;
 
     private final UserRepository userRepository;
     private final S3Service s3Service;
@@ -63,24 +67,44 @@ public class UserService {
         }
     }
 
-
+    @Transactional
     public void uploadUserProfilePicture(MultipartFile file) {
         Optional<User> user = getCurrentUser();
-        String userId = user.get().getId().toString();
-        String imageId = UUID.randomUUID().toString();
-        try {
-            s3Service.putObject(
-                  s3Buckets.getUsers(),
-                    "profile-images/%s/%s".formatted(userId, imageId),
-                    file.getBytes()
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Long userId = user.get().getId();
+        UUID imageId = UUID.randomUUID();
+        // TODO check file extension
+        if (file.getSize() < maxImageSize) {
+            try {
+                s3Service.putObject(
+                        s3Buckets.getUsers(),
+                        "profile-images/%s/%s".formatted(userId, imageId),
+                        file.getBytes()
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            userRepository.updateUserByProfilePicture(imageId, userId);
+        } else {
+            throw new RuntimeException("Image size is too large.");
         }
-        //save to DB
     }
 
+    public byte[] getUserProfilePicture() {
+        Optional<User> user = getCurrentUser();
+        Long userId = user.get().getId();
+        UUID imageId = user.get().getProfilePicture();
 
+        // TODO make good exceptions
+        if(imageId == null) {
+            throw new RuntimeException("No picture found for user.");
+        }
+
+        byte[] picture = s3Service.getObject(
+                s3Buckets.getUsers(),
+                "profile-images/%s/%s".formatted(userId, imageId)
+        );
+        return picture;
+    }
 
 
 

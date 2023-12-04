@@ -56,7 +56,18 @@ public class UserController {
             @RequestParam("file")MultipartFile file
             ) {
         userService.uploadUserProfilePicture(file);
+        return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/profile-image")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<byte[]> getUserProfileImage() {
+        byte[] image = userService.getUserProfilePicture();
+        return ResponseEntity.ok(image);
+    }
+
+
+
 
 
 //todo fix this make admin only

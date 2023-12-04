@@ -20,19 +20,19 @@ public class FishCatchController {
 
     @GetMapping("{fishCatchId}")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<FishCatchDto> getFishCatch(
+    public ResponseEntity<FullFishCatchDto> getFishCatch(
             @PathVariable("fishCatchId") Long fishCatchId
     ) {
-        Optional<FishCatchDto> fishCatch = fishCatchService.getFishCatchById(fishCatchId);
+        Optional<FullFishCatchDto> fishCatch = fishCatchService.getFishCatchById(fishCatchId);
         return fishCatch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("find-in-radius")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<List<FishCatchDto>> getFishCatchesInRadius(
+    public ResponseEntity<List<FullFishCatchDto>> getFishCatchesInRadius(
             @RequestBody SearchRadiusRequest request
     ) {
-        Optional<List<FishCatchDto>> list = fishCatchService.getFishCatchesInRadius(request);
+        Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatchesInRadius(request);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

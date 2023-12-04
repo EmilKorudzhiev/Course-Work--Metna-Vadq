@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -25,7 +26,8 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @Table(
         name = "user_",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_unique", columnNames = "email")
+                @UniqueConstraint(name = "user_email_unique", columnNames = "email"),
+                @UniqueConstraint(name = "user_profile_picture_id_unique", columnNames = "profile_picture_id")
         }
 )
 public class User implements UserDetails {
@@ -69,6 +71,11 @@ public class User implements UserDetails {
             nullable = false
     )
     private String password;
+
+    @Column(
+            name = "profile_picture_id"
+    )
+    private UUID profilePicture;
 
     @Column(
             name = "role",

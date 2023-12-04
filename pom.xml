@@ -103,6 +103,7 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
 		<dependency>
 			<groupId>dev.emilkorudzhiev</groupId>
 			<artifactId>coursework</artifactId>

@@ -5,7 +5,6 @@ import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +23,13 @@ public class FishCatchService {
     private final FishCatchRepository fishCatchRepository;
     private final UserRepository userRepository;
 
-    public Optional<FishCatchDto> getFishCatchById(Long fishCatchId) {
-        return fishCatchRepository.findById(fishCatchId).map(FishCatchDto::new);
+    public Optional<FullFishCatchDto> getFishCatchById(Long fishCatchId) {
+        return fishCatchRepository.findById(fishCatchId).map(FullFishCatchDto::new);
     }
 
-    public Optional<List<FishCatchDto>> getFishCatchesInRadius(SearchRadiusRequest request) {
+    public Optional<List<FullFishCatchDto>> getFishCatchesInRadius(SearchRadiusRequest request) {
         Optional<List<FishCatch>> fishCatches =  fishCatchRepository.findFishCatchesInRadius(request.getLatitude(), request.getLongitude(), request.getDistance());
-        return fishCatches.map(catches -> catches.stream().map(FishCatchDto::new).collect(Collectors.toList()));
+        return fishCatches.map(catches -> catches.stream().map(FullFishCatchDto::new).collect(Collectors.toList()));
     }
 
     public void postFishCatch(FishCatchRequest request){
