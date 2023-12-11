@@ -68,7 +68,7 @@ public class UserService {
     }
 
     @Transactional
-    public void uploadUserProfilePicture(MultipartFile file) {
+    public void uploadUserProfileImage(MultipartFile file) {
         Optional<User> user = getCurrentUser();
         Long userId = user.get().getId();
         UUID imageId = UUID.randomUUID();
@@ -89,7 +89,7 @@ public class UserService {
         }
     }
 
-    public byte[] getUserProfilePicture() {
+    public byte[] getUserProfileImage() {
         Optional<User> user = getCurrentUser();
         Long userId = user.get().getId();
         UUID imageId = user.get().getProfilePicture();
@@ -106,7 +106,17 @@ public class UserService {
         return picture;
     }
 
+    public String getUserProfileImageUrl() {
+        Optional<User> user = getCurrentUser();
+        String imageId = user.get().getProfilePicture().toString();
 
+        // TODO make good exceptions
+        if(imageId == null) {
+            throw new RuntimeException("No picture found for user.");
+        }
+
+        return imageId;
+    }
 
 
 

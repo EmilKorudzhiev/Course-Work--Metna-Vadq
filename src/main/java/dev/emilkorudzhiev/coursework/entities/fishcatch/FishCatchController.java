@@ -53,7 +53,7 @@ public class FishCatchController {
         boolean deleted = fishCatchService.deleteFishCatch(fishCatchId);
         return deleted ?
                 ResponseEntity.noContent().build() :
-                ResponseEntity.badRequest().build();
+                ResponseEntity.notFound().build();
     }
 
 }

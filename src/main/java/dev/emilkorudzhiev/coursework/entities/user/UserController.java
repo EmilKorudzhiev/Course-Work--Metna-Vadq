@@ -55,17 +55,23 @@ public class UserController {
     public ResponseEntity<Void> uploadUserProfileImage(
             @RequestParam("file")MultipartFile file
             ) {
-        userService.uploadUserProfilePicture(file);
+        userService.uploadUserProfileImage(file);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/profile-image")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<byte[]> getUserProfileImage() {
-        byte[] image = userService.getUserProfilePicture();
+        byte[] image = userService.getUserProfileImage();
         return ResponseEntity.ok(image);
     }
 
+    @GetMapping("/profile-image/url")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<String> getUserProfileImageUrl() {
+        String image = userService.getUserProfileImageUrl();
+        return ResponseEntity.ok(image);
+    }
 
 
 
