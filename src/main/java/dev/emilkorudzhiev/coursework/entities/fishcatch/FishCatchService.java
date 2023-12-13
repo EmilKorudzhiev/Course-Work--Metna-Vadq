@@ -2,6 +2,8 @@ package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
+import dev.emilkorudzhiev.coursework.entities.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -22,6 +24,7 @@ public class FishCatchService {
 
     private final FishCatchRepository fishCatchRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public Optional<FullFishCatchDto> getFishCatchById(Long fishCatchId) {
         return fishCatchRepository.findById(fishCatchId).map(FullFishCatchDto::new);
@@ -33,8 +36,7 @@ public class FishCatchService {
     }
 
     public void postFishCatch(FishCatchRequest request){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findUserByEmail(username).get();
+        User user = userService.getCurrentUser().get();
         FishCatch fishCatch = FishCatch
                 .builder()
                 .coordinates(new GeometryFactory().createPoint(new Coordinate(request.getLongitude(), request.getLatitude())))
@@ -46,10 +48,9 @@ public class FishCatchService {
     }
 
     public boolean deleteFishCatch(Long fishCatchId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findUserByEmail(username);
+        User user = userService.getCurrentUser().get();
         Optional<FishCatch> fishCatch = fishCatchRepository.findById(fishCatchId);
-        if (!user.get().getId().equals(fishCatch.get().getUser().getId()) || fishCatchId.describeConstable().isEmpty()) {
+        if (!user.getId().equals(fishCatch.get().getUser().getId())) {
             return false;
         }else {
             fishCatchRepository.deleteById(fishCatchId);

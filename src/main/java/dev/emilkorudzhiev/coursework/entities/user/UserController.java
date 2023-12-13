@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
+import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping(path = "/all")
+    @GetMapping(path = "all")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<FullUserDto>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping(
-            value = "/profile-image",
+            value = "profile-image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
@@ -59,18 +60,37 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/profile-image")
+    @GetMapping("profile-image")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<byte[]> getUserProfileImage() {
         byte[] image = userService.getUserProfileImage();
         return ResponseEntity.ok(image);
     }
 
-    @GetMapping("/profile-image/url")
+    @GetMapping("profile-image/url")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<String> getUserProfileImageUrl() {
         String image = userService.getUserProfileImageUrl();
         return ResponseEntity.ok(image);
+    }
+
+    //todo decide how do i send page info
+    @GetMapping("like/fish-catch/{userId}/{pageNum}")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<PartialFishCatchDto>> getUserLikesById(
+            @PathVariable("userId") Long userId,
+            @PathVariable("pageNum") int pageNumber
+    ) {
+        return ResponseEntity.ok(userService.getUserLikesById(userId, pageNumber));
+    }
+
+    @PutMapping("like/fish-catch/{fishCatchId}")
+    @PreAuthorize("hasAnyAuthority('admin:update', 'user:update')")
+    public ResponseEntity<Void> userLikeFishCatch(
+            @PathVariable("fishCatchId") Long fishCatchId
+    ) {
+        userService.likeFishCatch(fishCatchId);
+        return ResponseEntity.noContent().build();
     }
 
 

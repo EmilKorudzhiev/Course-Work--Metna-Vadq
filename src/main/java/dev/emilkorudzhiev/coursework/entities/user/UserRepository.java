@@ -11,11 +11,11 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.email = ?1")
+    @Query("SELECT u FROM User u WHERE u.email = :email")
     Optional<User> findUserByEmail(String email);
 
     @Modifying
-    @Query("UPDATE User u SET u.profilePicture = ?1 WHERE u.id = ?2")
-    int updateUserByProfilePicture(UUID profilePictureId, Long userId);
+    @Query("UPDATE User u SET u.profilePicture = :profilePictureId WHERE u.id = :userId")
+    void updateUserByProfilePicture(UUID profilePictureId, Long userId);
 
 }

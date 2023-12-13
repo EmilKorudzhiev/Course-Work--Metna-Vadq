@@ -74,4 +74,7 @@ public class FishCatch {
     )
     private List<Comment> comments;
 
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "likedFishCatches")
+    private List<User> likes;
+
 }

@@ -1,6 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface FishCatchRepository extends JpaRepository<FishCatch, Long> {
+
+    @Query("SELECT fc FROM FishCatch fc JOIN fc.likes u WHERE u.id = :userId")
+    List<FishCatch> findLikedFishCatchesByUserId(Long userId, Pageable pageable);
 
     @Query(
             value = "SELECT * FROM fish_catch WHERE ST_DWithin(coordinates, ST_GeomFromText('POINT(' || :longitude || ' ' || :latitude || ')', 4326), :distanceMeters);",

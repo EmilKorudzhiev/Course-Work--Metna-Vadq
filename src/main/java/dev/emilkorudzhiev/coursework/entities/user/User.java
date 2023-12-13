@@ -97,6 +97,14 @@ public class User implements UserDetails {
     private List<Comment> comments;
 
 
+    //somehow id is duplicate answer is in web history
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "fish_catch_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "fish_catch_id"))
+    private List<FishCatch> likedFishCatches;
+
 
     public User(String firstName, String lastName, String email, String password, Role role) {
         this.firstName = firstName;

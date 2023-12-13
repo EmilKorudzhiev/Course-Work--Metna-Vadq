@@ -2,10 +2,16 @@ package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.aws.s3.S3Buckets;
 import dev.emilkorudzhiev.coursework.aws.s3.S3Service;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatchRepository;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,19 +30,20 @@ public class UserService {
     private int maxImageSize;
 
     private final UserRepository userRepository;
+    private final FishCatchRepository fishCatchRepository;
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
 
 
-    private Optional<User> getCurrentUser() {
+    public Optional<User> getCurrentUser() {
         return userRepository.findUserByEmail(getCurrentUserEmail());
     }
 
-    private String getCurrentUserEmail() {
+    public String getCurrentUserEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    private Long getCurrentUserId() {
+    public Long getCurrentUserId() {
         Optional<User> userOptional = userRepository.findUserByEmail(getCurrentUserEmail());
         return userOptional.get().getId();
     }
@@ -117,6 +124,29 @@ public class UserService {
 
         return imageId;
     }
+
+    public List<PartialFishCatchDto> getUserLikesById(Long userId, int pageNumber) {
+        return fishCatchRepository.findLikedFishCatchesByUserId(userId, PageRequest.of(pageNumber, 2))
+                .stream().map(PartialFishCatchDto::new).toList();
+    }
+
+    public void likeFishCatch(Long fishCatchId) {
+        User user = getCurrentUser().get();
+        Optional<FishCatch> fishCatch = fishCatchRepository.findById(fishCatchId);
+
+        if(user.getLikedFishCatches()
+                .stream()
+                .anyMatch(fc -> fc.getId().equals(fishCatchId))) {
+            throw new RuntimeException("Post already liked");
+        }
+
+        user.getLikedFishCatches().add(fishCatch.get());
+        userRepository.save(user);
+    }
+
+
+
+
 
 
 

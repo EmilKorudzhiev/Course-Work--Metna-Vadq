@@ -20,7 +20,7 @@ public class FishCatchController {
 
     @GetMapping("{fishCatchId}")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<FullFishCatchDto> getFishCatch(
+    public ResponseEntity<FullFishCatchDto> getFishCatchById(
             @PathVariable("fishCatchId") Long fishCatchId
     ) {
         Optional<FullFishCatchDto> fishCatch = fishCatchService.getFishCatchById(fishCatchId);

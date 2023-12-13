@@ -1,6 +1,5 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
-import dev.emilkorudzhiev.coursework.entities.fishcatch.FullFishCatchDto;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import lombok.Getter;
@@ -22,7 +21,6 @@ public class FullUserDto {
     private UUID profilePicture;
     private Role role;
     private List<PartialFishCatchDto> fishCatches;
-
 
     public FullUserDto(User user) {
         this.id = user.getId();
