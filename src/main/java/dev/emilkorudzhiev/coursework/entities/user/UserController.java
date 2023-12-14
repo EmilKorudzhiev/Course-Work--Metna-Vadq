@@ -74,12 +74,11 @@ public class UserController {
         return ResponseEntity.ok(image);
     }
 
-    //todo decide how do i send page info
-    @GetMapping("like/fish-catch/{userId}/{pageNum}")
+    @GetMapping("like/fish-catch")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<PartialFishCatchDto>> getUserLikesById(
-            @PathVariable("userId") Long userId,
-            @PathVariable("pageNum") int pageNumber
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "page", defaultValue = "0") int pageNumber
     ) {
         return ResponseEntity.ok(userService.getUserLikesById(userId, pageNumber));
     }

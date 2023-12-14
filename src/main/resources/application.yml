@@ -26,7 +26,6 @@ application:
       refresh-token:
         expiration: 86400000 # 1 day
 
-#SETUP ALL THINGS
 cloud:
   aws:
     region: eu-north-1
@@ -36,4 +35,12 @@ cloud:
         fishCatches: course-work-fish-catches
         locations: course-work-locations
       max-file-size: 8388608 #8MB
+
+app:
+  constants:
+    posts:
+      likes-page-size: 20
+      comment-page-size: 20
+    users:
+      likes-page-size: 20
 

@@ -10,8 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +26,9 @@ public class UserService {
 
     @Value("${cloud.aws.s3.max-file-size}")
     private int maxImageSize;
+
+    @Value("${app.constants.users.likes-page-size}")
+    private int pageSize;
 
     private final UserRepository userRepository;
     private final FishCatchRepository fishCatchRepository;
@@ -126,7 +127,7 @@ public class UserService {
     }
 
     public List<PartialFishCatchDto> getUserLikesById(Long userId, int pageNumber) {
-        return fishCatchRepository.findLikedFishCatchesByUserId(userId, PageRequest.of(pageNumber, 2))
+        return fishCatchRepository.findLikedFishCatchesByUserId(userId, PageRequest.of(pageNumber, pageSize))
                 .stream().map(PartialFishCatchDto::new).toList();
     }
 
