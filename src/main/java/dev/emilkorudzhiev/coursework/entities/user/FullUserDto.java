@@ -27,7 +27,7 @@ public class FullUserDto {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
-        this.profilePicture = user.getProfilePicture();
+        this.profilePicture = user.getProfileImage();
         this.role = user.getRole();
         this.fishCatches = user.getFishCatches().stream().map(PartialFishCatchDto::new).toList();
     }

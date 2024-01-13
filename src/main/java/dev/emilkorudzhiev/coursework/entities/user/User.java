@@ -27,7 +27,7 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
         name = "user_",
         uniqueConstraints = {
                 @UniqueConstraint(name = "user_email_unique", columnNames = "email"),
-                @UniqueConstraint(name = "user_profile_picture_id_unique", columnNames = "profile_picture_id")
+                @UniqueConstraint(name = "user_profile_picture_id_unique", columnNames = "profile_image_id")
         }
 )
 public class User implements UserDetails {
@@ -73,9 +73,9 @@ public class User implements UserDetails {
     private String password;
 
     @Column(
-            name = "profile_picture_id"
+            name = "profile_image_id"
     )
-    private UUID profilePicture;
+    private UUID profileImage;
 
     @Column(
             name = "role",

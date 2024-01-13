@@ -2,9 +2,11 @@ package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,12 +38,13 @@ public class FishCatchController {
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
     public ResponseEntity<Void> postFishCatch(
-            @RequestBody FishCatchRequest request
+            @RequestPart FishCatchRequest request,
+            @RequestPart MultipartFile image
     ) {
-        fishCatchService.postFishCatch(request);
+        fishCatchService.postFishCatch(request, image);
         return ResponseEntity.noContent().build();
     }
 

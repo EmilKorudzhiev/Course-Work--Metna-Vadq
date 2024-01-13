@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.Point;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
@@ -58,6 +59,11 @@ public class FishCatch {
             nullable = false
     )
     private String text;
+
+    @Column(
+            name = "fish_catch_image_id"
+    )
+    private UUID fishCatchImage;
 
     @ManyToOne
     @JoinColumn(

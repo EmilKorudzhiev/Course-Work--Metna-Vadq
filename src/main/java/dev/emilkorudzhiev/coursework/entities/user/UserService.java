@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -76,31 +73,34 @@ public class UserService {
     }
 
     @Transactional
-    public void uploadUserProfileImage(MultipartFile file) {
+    public void uploadUserProfileImage(MultipartFile image) {
         Optional<User> user = getCurrentUser();
         Long userId = user.get().getId();
         UUID imageId = UUID.randomUUID();
-        // TODO check file extension
-        if (file.getSize() < maxImageSize) {
-            try {
-                s3Service.putObject(
-                        s3Buckets.getUsers(),
-                        "profile-images/%s/%s".formatted(userId, imageId),
-                        file.getBytes()
-                );
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            userRepository.updateUserByProfilePicture(imageId, userId);
-        } else {
+
+        if(image.isEmpty())
+            throw new RuntimeException("No image attached.");
+        if(!Set.of("image/png","image/jpeg").contains(image.getContentType()))
+            throw new RuntimeException("File format not supported.");
+        if (image.getSize() > maxImageSize)
             throw new RuntimeException("Image size is too large.");
+
+        try {
+            s3Service.putObject(
+                    s3Buckets.getUsers(),
+                    "profile-images/%s/%s".formatted(userId, imageId),
+                    image.getBytes()
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        userRepository.updateUserByProfilePicture(imageId, userId);
     }
 
     public byte[] getUserProfileImage() {
         Optional<User> user = getCurrentUser();
         Long userId = user.get().getId();
-        UUID imageId = user.get().getProfilePicture();
+        UUID imageId = user.get().getProfileImage();
 
         // TODO make good exceptions
         if(imageId == null) {
@@ -116,7 +116,7 @@ public class UserService {
 
     public String getUserProfileImageUrl() {
         Optional<User> user = getCurrentUser();
-        String imageId = user.get().getProfilePicture().toString();
+        String imageId = user.get().getProfileImage().toString();
 
         // TODO make good exceptions
         if(imageId == null) {

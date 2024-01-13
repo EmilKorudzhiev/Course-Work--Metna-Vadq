@@ -1,7 +1,9 @@
 package dev.emilkorudzhiev.coursework.security;
 
 
+import dev.emilkorudzhiev.coursework.exceptions.StatusExpiredJwtExeption;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -32,6 +34,8 @@ public class JwtService {
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
     }
+
+    public Date getExpirationTimeOfToken(String jwtToken) { return extractClaim(jwtToken, Claims::getExpiration); }
 
     public <T> T extractClaim(
             String jwtToken,

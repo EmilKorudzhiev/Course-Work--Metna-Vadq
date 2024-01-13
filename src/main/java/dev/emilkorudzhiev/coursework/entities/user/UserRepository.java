@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByEmail(String email);
 
     @Modifying
-    @Query("UPDATE User u SET u.profilePicture = :profilePictureId WHERE u.id = :userId")
+    @Query("UPDATE User u SET u.profileImage = :profilePictureId WHERE u.id = :userId")
     void updateUserByProfilePicture(UUID profilePictureId, Long userId);
 
 }
