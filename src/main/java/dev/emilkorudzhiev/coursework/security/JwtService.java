@@ -1,9 +1,7 @@
 package dev.emilkorudzhiev.coursework.security;
 
 
-import dev.emilkorudzhiev.coursework.exceptions.StatusExpiredJwtExeption;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
