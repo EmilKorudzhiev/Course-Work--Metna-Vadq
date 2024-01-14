@@ -22,7 +22,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
 
-        } catch (StatusExpiredJetException e) {
+        } catch (StatusExpiredJwtException e) {
             setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
             e.printStackTrace();
         }

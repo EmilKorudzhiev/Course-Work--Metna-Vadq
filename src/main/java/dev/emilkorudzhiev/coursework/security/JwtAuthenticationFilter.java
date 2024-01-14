@@ -1,6 +1,6 @@
 package dev.emilkorudzhiev.coursework.security;
 
-import dev.emilkorudzhiev.coursework.exceptions.StatusExpiredJetException;
+import dev.emilkorudzhiev.coursework.exceptions.StatusExpiredJwtException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            throw new StatusExpiredJetException();
+            throw new StatusExpiredJwtException();
         }
     }
 }
