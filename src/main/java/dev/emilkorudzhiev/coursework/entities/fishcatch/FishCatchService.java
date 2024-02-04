@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +35,21 @@ public class FishCatchService {
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
 
+    // TODO : make recommendation algorithm
+    public Optional<List<FullFishCatchDto>> getFishCatches(Integer pageSize, Integer pageNumber) {
+        return Optional.of(fishCatchRepository
+                .findFishCatchPageable(PageRequest.of(pageNumber, pageSize))
+                .stream().map(FullFishCatchDto::new).toList());
+    }
+
     public Optional<FullFishCatchDto> getFishCatchById(Long fishCatchId) {
         return fishCatchRepository.findById(fishCatchId).map(FullFishCatchDto::new);
     }
 
+    // TODO : make date search too
     public Optional<List<FullFishCatchDto>> getFishCatchesInRadius(SearchRadiusRequest request) {
         Optional<List<FishCatch>> fishCatches =  fishCatchRepository.findFishCatchesInRadius(request.getLatitude(), request.getLongitude(), request.getDistance());
-        return fishCatches.map(catches -> catches.stream().map(FullFishCatchDto::new).collect(Collectors.toList()));
+        return fishCatches.map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
     }
 
     public void postFishCatch(FishCatchRequest request, MultipartFile image){

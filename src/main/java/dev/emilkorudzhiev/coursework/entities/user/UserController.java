@@ -78,7 +78,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<PartialFishCatchDto>> getUserLikesById(
             @RequestParam(name = "userId") Long userId,
-            @RequestParam(name = "page", defaultValue = "0") int pageNumber
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNumber
     ) {
         return ResponseEntity.ok(userService.getUserLikesById(userId, pageNumber));
     }

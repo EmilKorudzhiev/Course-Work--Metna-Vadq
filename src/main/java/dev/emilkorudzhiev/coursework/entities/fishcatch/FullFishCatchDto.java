@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,6 +18,7 @@ public class FullFishCatchDto {
     private Double latitude;
     private Double longitude;
     private String text;
+    private UUID fishCatchImage;
     private PartialUserDto user;
     private List<CommentDto> comments;
 
@@ -26,6 +28,7 @@ public class FullFishCatchDto {
         this.latitude = fishCatch.getCoordinates().getCoordinate().getY();
         this.longitude = fishCatch.getCoordinates().getCoordinate().getX();
         this.text = fishCatch.getText();
+        this.fishCatchImage = fishCatch.getFishCatchImage();
         this.user = new PartialUserDto(fishCatch.getUser());
         this.comments = fishCatch.getComments().stream().map(CommentDto::new).toList();
     }

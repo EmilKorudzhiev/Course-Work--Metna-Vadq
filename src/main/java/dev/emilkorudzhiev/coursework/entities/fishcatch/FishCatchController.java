@@ -20,6 +20,17 @@ public class FishCatchController {
 
     private final FishCatchService fishCatchService;
 
+    // TODO : make recommendation algorithm
+    @GetMapping()
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<FullFishCatchDto>> getFishCatches(
+            @RequestParam(name = "page-size", defaultValue = "20", required = false) Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber
+    ) {
+        Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatches(pageSize, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("{fishCatchId}")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<FullFishCatchDto> getFishCatchById(
@@ -29,6 +40,8 @@ public class FishCatchController {
         return fishCatch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // TODO : make it better for map showcase
+    // TODO : make date search too
     @GetMapping("find-in-radius")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<FullFishCatchDto>> getFishCatchesInRadius(
@@ -37,6 +50,10 @@ public class FishCatchController {
         Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatchesInRadius(request);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+
+    // TODO : get posts for feed with pagination
+
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")

@@ -126,7 +126,7 @@ public class UserService {
         return imageId;
     }
 
-    public List<PartialFishCatchDto> getUserLikesById(Long userId, int pageNumber) {
+    public List<PartialFishCatchDto> getUserLikesById(Long userId, Integer pageNumber) {
         return fishCatchRepository.findLikedFishCatchesByUserId(userId, PageRequest.of(pageNumber, pageSize))
                 .stream().map(PartialFishCatchDto::new).toList();
     }
