@@ -3,10 +3,10 @@ import 'dart:ffi';
 import 'package:MetnaVadq/features/user/data/partial_user_model.dart';
 
 class FullPostModel {
-  final BigInt id;
+  final int id;
   final DateTime date;
-  final Double latitude;
-  final Double longitude;
+  final double latitude;
+  final double longitude;
   final String description;
   final String imageUrl;
   final PartialUser user;
@@ -14,10 +14,10 @@ class FullPostModel {
   FullPostModel(this.id, this.date, this.latitude, this.longitude, this.description, this.imageUrl, this.user);
 
   FullPostModel.fromJson(Map<String, dynamic> json)
-  : id = json['id'] as BigInt,
-    date = json['date'] as DateTime,
-    latitude = json['latitude'] as Double,
-    longitude = json['longitude'] as Double,
+  : id = json['id'] as int,
+    date = DateTime.parse(json['date']),
+    latitude = json['latitude'] as double,
+    longitude = json['longitude'] as double,
     description = json['text'] as String,
     imageUrl = json['fishCatchImage'] as String,
     user = PartialUser.fromJson(json['user']);

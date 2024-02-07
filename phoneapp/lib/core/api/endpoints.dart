@@ -1,6 +1,6 @@
 class Endpoints {
   //API
-  static const _API_URL = 'http://192.168.4.203:8080';
+  static const _API_URL = 'http://192.168.0.200:8080';
   static const _API_VERSION = '/api/v1';
   static const URL = _API_URL + _API_VERSION;
 

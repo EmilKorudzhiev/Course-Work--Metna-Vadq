@@ -1,7 +1,8 @@
+import 'package:MetnaVadq/core/aws/aws.dart';
 import 'package:MetnaVadq/features/auth/providers/auth_providers.dart';
 import 'package:MetnaVadq/features/posts/data/models/full_post_model.dart';
 import 'package:MetnaVadq/features/posts/data/requests/pageable_post_request.dart';
-import 'package:MetnaVadq/features/posts/providers/post_providers.dart';
+import 'package:MetnaVadq/features/posts/service/post_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:MetnaVadq/features/posts/screens/app_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,12 +24,6 @@ class FeedPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    int pageSize;
-    int page;
-
-    var _postPageableData =
-        ref.read(postPageableProvider(PageablePostRequest(0, 20)));
-
     List<FullPostModel> postList = [];
 
     return PopScope(
@@ -48,30 +43,25 @@ class FeedPage extends ConsumerWidget {
                     child: const Text("Logout"),
                   ),
                 ),
-                // TODO make is infinity scrollable and pull to refresh
+                // TODO make it infinity scrollable and pull to refresh
                 Container(
                   child: Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: _refresh,
-                      //child: LoadMore(
-                        child: _postPageableData.when(
-                            data: (posts) {
-                              return ListView.builder(
-                                  itemCount: posts.length,
-                                  itemBuilder: (context, index) {
-                                    postList += posts;
-                                    print("Length of recieved data: ${posts.length}");
-                                    print("Length of whole data: ${postList.length}");
-                                    return PostCard(post: posts[index]);
-                                  });
-                            },
-                            error: (error, stackTrace) => Center(
-                                  child: Text('Error: $error'),
-                                ),
-                            loading: () => const Center(
-                                  child: CircularProgressIndicator(),
-                                )),
-                     // ),
+                    child: FutureBuilder(
+                      future: ref.watch(postControllerProvider).getPosts(0, 20),
+                      builder: (context, snapshot) {
+                        if(snapshot.data == null){
+                          return const Center(child: CircularProgressIndicator(),);
+                        }
+                        var posts = snapshot.data!;
+                        return ListView.builder(
+                            itemCount: posts.length,
+                            itemBuilder: (context, index) {
+                              postList += posts;
+                              print("Length of recieved data: ${posts.length}");
+                              print("Length of whole data: ${postList.length}");
+                              return PostCard(post: posts[index]);
+                            });
+                      },
                     ),
                   ),
                 ),
@@ -79,8 +69,9 @@ class FeedPage extends ConsumerWidget {
             )));
   }
 
-  Future<void> _refresh() async { print("Refresh works!"); }
-
+  Future<void> _refresh() async {
+    print("Refresh works!");
+  }
 }
 
 class PostCard extends StatelessWidget {
@@ -103,7 +94,7 @@ class PostCard extends StatelessWidget {
             padding: EdgeInsets.only(top: 4.0, left: 10.0),
             child: Row(
               children: [
-                AppWidgets.buildCircularProfilePicture(post.imageUrl, 40),
+                AppWidgets.buildCircularProfilePicture(AWS.imgUrl + post.id.toString() + "/" + post.imageUrl, 40),
                 Expanded(
                   child: ListTile(
                     title: Text(
@@ -119,7 +110,7 @@ class PostCard extends StatelessWidget {
             ),
           ),
           Image.network(
-            post.imageUrl,
+            AWS.imgUrl + post.id.toString() + "/" + post.imageUrl,
             height: 400.0,
             fit: BoxFit.cover,
           ),
