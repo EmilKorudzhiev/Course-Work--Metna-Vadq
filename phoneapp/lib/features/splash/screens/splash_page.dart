@@ -1,5 +1,6 @@
-import 'package:MetnaVadq/features/auth/providers/auth_providers.dart';
 import 'package:MetnaVadq/features/auth/screens/login_page.dart';
+import 'package:MetnaVadq/features/auth/service/auth_controller.dart';
+import 'package:MetnaVadq/features/navigation_bar/widgets/navigation_bar_widget.dart';
 import 'package:MetnaVadq/features/posts/screens/feed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +26,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
           Future.delayed(Duration(seconds: 2), () async {
             if (value) {
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const FeedPage()));
+                  MaterialPageRoute(builder: (_) => NavigationBarWidget()));
             } else {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (_) => const LoginPage()));

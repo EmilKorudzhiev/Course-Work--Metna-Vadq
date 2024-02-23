@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:MetnaVadq/views/widgets/app_widgets.dart';
+import 'package:MetnaVadq/views/widgets/feed_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final postsProvider = FutureProvider<List<Post>>((ref) async {

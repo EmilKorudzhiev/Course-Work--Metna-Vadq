@@ -15,8 +15,8 @@ class PostController {
   Future<List<FullPostModel>> getPosts(int pageNum, int pageSize) async {
     final response = await _postRepository.getPosts(pageNum, pageSize);
     List<FullPostModel> posts = (response?.data as List)
-     .map((el) => FullPostModel.fromJson(el))
-     .toList();
+        .map((el) => FullPostModel.fromJson(el))
+        .toList();
 
     print(posts.toString());
 

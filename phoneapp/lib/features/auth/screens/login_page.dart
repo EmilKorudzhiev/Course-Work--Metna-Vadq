@@ -1,6 +1,7 @@
 import 'package:MetnaVadq/features/auth/models/login_request.dart';
-import 'package:MetnaVadq/features/auth/providers/auth_providers.dart';
 import 'package:MetnaVadq/features/auth/screens/register_page.dart';
+import 'package:MetnaVadq/features/auth/service/auth_controller.dart';
+import 'package:MetnaVadq/features/navigation_bar/widgets/navigation_bar_widget.dart';
 import 'package:MetnaVadq/features/posts/screens/feed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,27 +62,15 @@ class LoginPage extends ConsumerWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              ref.read(authProvider.notifier).logIn(
-                                  LoginRequest(emailController.text,
-                                      passwordController.text)).then((value) =>
-                                  Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const FeedPage())));
-                              // ref
-                              //     .read(authProvider)
-                              //     .isLoggedIn()
-                              //     .then((value) => {
-                              //           if (value)
-                              //             {
-                              //               Navigator.push(
-                              //                   context,
-                              //                   MaterialPageRoute(
-                              //                       builder: (context) =>
-                              //                           const FeedPage()))
-                              //             }
-                              //         });
+                              ref
+                                  .read(authProvider.notifier)
+                                  .logIn(LoginRequest(emailController.text,
+                                      passwordController.text))
+                                  .then((value) => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NavigationBarWidget())));
                             },
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.black,
