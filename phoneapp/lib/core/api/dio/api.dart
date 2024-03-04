@@ -15,15 +15,13 @@ class Api {
   Api({required SecureStorageManager storage}) : _storage = storage {
     dio.interceptors.add(
       InterceptorsWrapper(
-        onError: (DioError e, handler) async {
+        onError: (e, handler) async {
           if (e.response?.statusCode == 401) {
-            // If a 401 response is received, refresh the access token
-            await refreshToken();
-            print("${_storage.getAccessToken()}");
-            // Update the request header with the new access token
-            e.requestOptions.headers['Authorization'] = 'Bearer ${_storage.getAccessToken()}';
 
-            // Repeat the request with the updated header
+            await refreshToken();
+
+            e.requestOptions.headers['Authorization'] = 'Bearer ${await _storage.getAccessToken()}';
+
             return handler.resolve(await dio.fetch(e.requestOptions));
           }
           return handler.next(e);

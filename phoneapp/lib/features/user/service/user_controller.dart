@@ -3,28 +3,26 @@ import 'package:MetnaVadq/features/user/service/user_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userControllerProvider = Provider((ref) {
-
-  throw UnimplementedError("userControllerProvider unimplemented!!!");
-
-  // final userRepository = ref.read(userRepositoryProvider);
-  // return UserController(userRepository: userRepository);
+  final userRepository = ref.read(userRepositoryProvider);
+  return UserController(userRepository: userRepository);
 });
 
 class UserController {
-  final UserRepository _userepository;
+  final UserRepository _userRepository;
 
-  UserController({required UserRepository userRepository}): _userepository = userRepository;
+  UserController({required UserRepository userRepository}): _userRepository = userRepository;
 
   Future<UserModel> getUserProfile(int? id) async {
-    final response = await _userepository.getUserProfile(id);
+    try {
+    final response = await _userRepository.getUserProfile(id);
 
-    throw UnimplementedError("UserController Unimplemented!!!");
+    UserModel userProfile = UserModel.fromJson(response?.data);
 
-    // UserModel userProfile = UserModel.fromJson(response);
-    //
-    // print(response);
-    //
-    // return userProfile;
+    return userProfile;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
 
 }

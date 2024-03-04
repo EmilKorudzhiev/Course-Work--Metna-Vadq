@@ -1,5 +1,5 @@
 class UserModel {
-  final BigInt id;
+  final int id;
   final String firstName;
   final String lastName;
   final String? profilePictureUrl;
@@ -7,10 +7,10 @@ class UserModel {
   UserModel({required this.id, required this.firstName, required this.lastName, this.profilePictureUrl});
 
   UserModel.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as BigInt,
+      : id = json['id'] as int,
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,
-        profilePictureUrl = json['profilePicture'] as String;
+        profilePictureUrl = json['profilePicture'] as String?;
 
   Map<String, dynamic> toJson() => {
     'id': id,

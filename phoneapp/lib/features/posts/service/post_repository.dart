@@ -27,7 +27,9 @@ class PostRepository {
             'page': pageNum,
             'page-size': pageSize,
           });
-      print(response.data);
+
+      print(response);
+
       return response;
     } on DioException catch (e) {
       rethrow;

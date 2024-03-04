@@ -9,22 +9,18 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NavigationBarWidget extends ConsumerStatefulWidget {
+  const NavigationBarWidget({super.key});
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NavigationBarState();
 }
 
 class _NavigationBarState extends ConsumerState<NavigationBarWidget> {
-  int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     const FeedPage(),
-    ProfilePage(),
+    const ProfilePage(null),
   ];
 
-  void _onIconTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
