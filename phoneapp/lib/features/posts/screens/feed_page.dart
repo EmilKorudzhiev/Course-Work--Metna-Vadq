@@ -14,7 +14,7 @@ class FeedPage extends ConsumerWidget {
     List<FullPostModel> postList = [];
 
     return SafeArea(
-          minimum: EdgeInsets.only(top: 16),
+          minimum: const EdgeInsets.only(top: 16),
           child: Scaffold(
               appBar: AppBar(
                 automaticallyImplyLeading: false,
@@ -65,7 +65,7 @@ class FeedPage extends ConsumerWidget {
 class PostCard extends StatelessWidget {
   final FullPostModel post;
 
-  const PostCard({Key? key, required this.post}) : super(key: key);
+  const PostCard({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -83,13 +83,13 @@ class PostCard extends StatelessWidget {
             child: Row(
               children: [
                 AppWidgets.buildCircularProfilePicture(
-                    AWS.imgUrl + post.id.toString() + "/" + post.imageUrl, 40),
+                    "${AWS.POST_IMAGE_URL}${post.id}/${post.imageUrl}", 40),
                 Expanded(
                   child: ListTile(
                     title: Text(
-                      post.user.firstName + " " + post.user.lastName,
+                      "${post.user.firstName} ${post.user.lastName}",
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -99,7 +99,7 @@ class PostCard extends StatelessWidget {
             ),
           ),
           Image.network(
-            AWS.imgUrl + post.id.toString() + "/" + post.imageUrl,
+            "${AWS.POST_IMAGE_URL}${post.id}/${post.imageUrl}",
             height: 400.0,
             fit: BoxFit.cover,
           ),
@@ -107,7 +107,7 @@ class PostCard extends StatelessWidget {
             padding: EdgeInsets.all(16.0),
             child: Text(
               post.description,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16.0,
               ),
             ),

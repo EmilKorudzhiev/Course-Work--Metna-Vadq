@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:MetnaVadq/api/auth/auth.dart';
-import 'package:MetnaVadq/views/pages/app/feed.dart';
+import 'package:MetnaVadq/views/pages/app/feed_page.dart';
 import 'package:MetnaVadq/views/pages/auth/register_page.dart';
 import 'package:MetnaVadq/views/widgets/auth_widgets.dart';
 import 'package:dio/dio.dart';

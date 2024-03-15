@@ -1,13 +1,15 @@
+import 'package:MetnaVadq/core/aws/aws.dart';
+import 'package:MetnaVadq/features/posts/data/models/partial_post_model.dart';
 import 'package:MetnaVadq/features/user/service/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfilePage extends ConsumerWidget {
   final int? userId;
+  List<PartialPostModel> posts = [];
 
-  const ProfilePage(this.userId, {super.key});
+  ProfilePage(this.userId, {super.key});
 
-  
   //TODO MAKE POST LOADING AND PAGE FETCHING ON THEM
 
   @override
@@ -25,42 +27,50 @@ class ProfilePage extends ConsumerWidget {
             }
             var user = snapshot.data!;
 
-            print("USER PROFILE:$user");
-
             return Scaffold(
               appBar: AppBar(
                 automaticallyImplyLeading: false,
-                title: const Text("User name"),
+                title: Text("${user.firstName} ${user.lastName}"),
                 centerTitle: true,
               ),
               body: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 12, bottom: 12),
+                    margin: const EdgeInsets.only(top: 12, bottom: 12),
                     child: Center(
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 20),
-                        child: const CircleAvatar(
-                          radius: 75,
-                          backgroundImage: NetworkImage(
-                              "https://wiki.dave.eu/images/4/47/Placeholder.png"),
-                        ),
+                        child: Builder(builder: (context) {
+                          if (user.profilePictureUrl == null) {
+                            return const CircleAvatar(
+                              radius: 75,
+                              backgroundImage: AssetImage(
+                                  "lib/assets/pictures/userProfileDefault.jpg"),
+                            );
+                          } else {
+                            return CircleAvatar(
+                              radius: 75,
+                              backgroundImage: NetworkImage(AWS.USER_IMAGE_URL +
+                                  user.profilePictureUrl.toString()),
+                            );
+                          }
+                        }),
                       ),
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 24),
+                    margin: const EdgeInsets.only(bottom: 24),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(right: 12),
-                          child: Text(
+                          margin: const EdgeInsets.only(right: 12),
+                          child: const Text(
                               style: TextStyle(fontSize: 20), "Followers: 12"),
                         ),
                         Container(
-                          margin: EdgeInsets.only(left: 12),
-                          child: Text(
+                          margin: const EdgeInsets.only(left: 12),
+                          child: const Text(
                               style: TextStyle(fontSize: 20), "Catches: 231"),
                         ),
                       ],
@@ -68,23 +78,58 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   Expanded(
                     child: Container(
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        children: List.generate(100, (index) {
-                          return Center(
-                            child: Text(
-                              'Item $index',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
+                        child: FutureBuilder(
+                      future: ref
+                          .watch(userControllerProvider)
+                          .getUserPosts(userId, 0, 15),
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
                           );
-                        }),
-                      ),
-                    ),
+                        }
+                        var posts = snapshot.data!;
+                        return GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 4.0,
+                                    mainAxisSpacing: 4.0,
+                                ),
+                            itemCount: posts.length,
+                            itemBuilder: (context, index) {
+                              return SmallPostCard(post: posts[index]);
+                            });
+                      },
+                    )),
                   )
                 ],
               ),
             );
           }),
+    );
+  }
+}
+
+class SmallPostCard extends StatelessWidget {
+  final PartialPostModel post;
+
+  SmallPostCard({super.key, required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: GestureDetector(
+        //TODO: Make it navigate to post page
+        onTap: () {print("Post Clicked");},
+        child: Container(
+          margin: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          child: Image.network(
+            "${AWS.POST_IMAGE_URL}${post.id}/${post.imageUrl}",
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 }

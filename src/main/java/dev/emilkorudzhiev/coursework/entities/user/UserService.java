@@ -48,13 +48,13 @@ public class UserService {
 
 
 
-    public Optional<FullUserDto> getSelf() {
-        return getCurrentUser().map(FullUserDto::new);
+    public Optional<PartialUserDto> getSelf() {
+        return getCurrentUser().map(PartialUserDto::new);
     }
 
-    public Optional<FullUserDto> getUser(Long userId) {
+    public Optional<PartialUserDto> getUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        return optionalUser.map(FullUserDto::new);
+        return optionalUser.map(PartialUserDto::new);
     }
 
     public List<FullUserDto> getUsers() {
@@ -107,11 +107,10 @@ public class UserService {
             throw new RuntimeException("No picture found for user.");
         }
 
-        byte[] picture = s3Service.getObject(
+        return s3Service.getObject(
                 s3Buckets.getUsers(),
                 "profile-images/%s/%s".formatted(userId, imageId)
         );
-        return picture;
     }
 
     public String getUserProfileImageUrl() {
@@ -126,9 +125,9 @@ public class UserService {
         return imageId;
     }
 
-    public List<PartialFishCatchDto> getUserLikesById(Long userId, Integer pageNumber) {
+    public Optional<List<PartialFishCatchDto>> getUserLikesById(Long userId, Integer pageNumber) {
         return fishCatchRepository.findLikedFishCatchesByUserId(userId, PageRequest.of(pageNumber, pageSize))
-                .stream().map(PartialFishCatchDto::new).toList();
+                .map(catches -> catches.stream().map(PartialFishCatchDto::new).toList());
     }
 
     public void likeFishCatch(Long fishCatchId) {

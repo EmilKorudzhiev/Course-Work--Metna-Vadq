@@ -1,7 +1,7 @@
 import 'package:MetnaVadq/features/auth/screens/login_page.dart';
 import 'package:MetnaVadq/features/auth/service/auth_controller.dart';
 import 'package:MetnaVadq/features/navigation_bar/widgets/navigation_bar_widget.dart';
-import 'package:MetnaVadq/features/posts/screens/feed.dart';
+import 'package:MetnaVadq/features/posts/screens/feed_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

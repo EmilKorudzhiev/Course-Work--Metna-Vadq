@@ -1,6 +1,6 @@
 import 'package:MetnaVadq/views/pages/splash_page.dart';
 import 'package:flutter/material.dart';
-import 'package:MetnaVadq/views/pages/app/feed.dart';
+import 'package:MetnaVadq/views/pages/app/feed_page.dart';
 import 'package:MetnaVadq/views/pages/auth/login_page.dart';
 import 'package:MetnaVadq/views/pages/auth/register_page.dart';
 

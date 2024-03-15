@@ -1,3 +1,4 @@
+import 'package:MetnaVadq/features/posts/data/models/partial_post_model.dart';
 import 'package:MetnaVadq/features/user/data/user_model.dart';
 import 'package:MetnaVadq/features/user/service/user_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,19 @@ class UserController {
     UserModel userProfile = UserModel.fromJson(response?.data);
 
     return userProfile;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<List<PartialPostModel>> getUserPosts(int? id, int page, int limit) async {
+    try {
+      final response = await _userRepository.getUserPosts(id, page, limit);
+
+      List<PartialPostModel> userPosts = (response?.data as List).map((e) => PartialPostModel.fromJson(e)).toList();
+
+      return userPosts;
     } catch (e) {
       print(e);
       throw e;

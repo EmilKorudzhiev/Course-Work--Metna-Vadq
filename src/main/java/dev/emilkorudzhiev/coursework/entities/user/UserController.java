@@ -1,6 +1,7 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
+import jakarta.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +20,16 @@ public class UserController {
 
     private final UserService userService;
 
+    // TODO : FIX UP RESPONSES AND REQUESTS
+
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<FullUserDto> getUser(
+    public ResponseEntity<PartialUserDto> getUser(
             @RequestParam(value = "userId", required = false) Long userId
     ) {
-        Optional<FullUserDto> user;
-
-        if (userId == null) {
-            user = userService.getSelf();
-        } else {
-            user = userService.getUser(userId);
-        }
-
+        Optional<PartialUserDto> user;
+        if (userId == null) user = userService.getSelf();
+        else user = userService.getUser(userId);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -82,7 +80,8 @@ public class UserController {
             @RequestParam(name = "userId") Long userId,
             @RequestParam(name = "page", defaultValue = "0") Integer pageNumber
     ) {
-        return ResponseEntity.ok(userService.getUserLikesById(userId, pageNumber));
+        Optional<List<PartialFishCatchDto>> list = userService.getUserLikesById(userId, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("like/fish-catch/{fishCatchId}")

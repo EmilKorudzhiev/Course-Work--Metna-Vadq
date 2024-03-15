@@ -34,7 +34,7 @@ class UserRepository {
         }),
       );
 
-      print("DA" + response.toString());
+      print(response.toString());
 
       return response;
     } on DioException catch (e) {
@@ -46,4 +46,34 @@ class UserRepository {
 
     return null;
   }
+
+  Future<Response?> getUserPosts(int? id, int page, int limit) async {
+    try {
+      var userId;
+      if (id == null) {
+        userId = "";
+      } else {
+        userId = id.toString();
+      }
+
+      final response = await _api.dio.get(
+        "${Endpoints.GET_USER_POSTS}?userId=?page-size=$limit&page=$page&user-id=$userId",
+        options: Options(headers: {
+          "Authorization": "Bearer ${await _storage.getAccessToken()}"
+        }),
+      );
+
+      print(response.toString());
+
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      print("ERROR!!!!!!");
+      print(e);
+    }
+
+    return null;
+  }
+
 }

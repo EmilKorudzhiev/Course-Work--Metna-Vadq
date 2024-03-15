@@ -36,10 +36,31 @@ public class FishCatchService {
     private final S3Buckets s3Buckets;
 
     // TODO : make recommendation algorithm
-    public Optional<List<FullFishCatchDto>> getFishCatches(Integer pageSize, Integer pageNumber) {
-        return Optional.of(fishCatchRepository
+    public Optional<List<FullFishCatchDto>> getFishCatches(
+            Integer pageSize,
+            Integer pageNumber
+    ) {
+        return fishCatchRepository
                 .findFishCatchPageable(PageRequest.of(pageNumber, pageSize))
-                .stream().map(FullFishCatchDto::new).toList());
+                .map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
+    }
+
+
+    public Optional<List<FullFishCatchDto>> getFishCatchesFeed(Integer pageSize, Integer pageNumber) {
+        return fishCatchRepository
+                .findFishCatchPageableFeed(PageRequest.of(pageNumber, pageSize))
+                .map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
+    }
+
+    public Optional<List<PartialFishCatchDto>> getUserFishCatches(
+            Integer pageSize,
+            Integer pageNumber,
+            Long userId
+    ) {
+        if (userId == null) userId = userService.getCurrentUserId();
+        return fishCatchRepository
+                .findFishCatchesByUserId(userId, PageRequest.of(pageNumber, pageSize))
+                .map(catches -> catches.stream().map(PartialFishCatchDto::new).toList());
     }
 
     public Optional<FullFishCatchDto> getFishCatchById(Long fishCatchId) {
@@ -47,9 +68,9 @@ public class FishCatchService {
     }
 
     // TODO : make date search too
-    public Optional<List<FullFishCatchDto>> getFishCatchesInRadius(SearchRadiusRequest request) {
+    public Optional<List<MarkerFishCatchDto>> getFishCatchMarkersInRadius(SearchRadiusRequest request) {
         Optional<List<FishCatch>> fishCatches =  fishCatchRepository.findFishCatchesInRadius(request.getLatitude(), request.getLongitude(), request.getDistance());
-        return fishCatches.map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
+        return fishCatches.map(catches -> catches.stream().map(MarkerFishCatchDto::new).toList());
     }
 
     public void postFishCatch(FishCatchRequest request, MultipartFile image){

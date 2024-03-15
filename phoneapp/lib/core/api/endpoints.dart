@@ -1,6 +1,6 @@
 class Endpoints {
   //API
-  static const _API_URL = 'http://192.168.0.200:8080';
+  static const _API_URL = 'http://192.168.43.152:8080';
   static const _API_VERSION = '/api/v1';
   static const URL = _API_URL + _API_VERSION;
 
@@ -12,6 +12,7 @@ class Endpoints {
 
   //User
   static const GET_USER_PROFILE = '$URL/user';
+  static const GET_USER_POSTS = '$URL/fish-catch/user';
 
   //Fish catches
   static const GET_POSTS_PAGEABLE_ENDPOINT = '$URL/fish-catch';

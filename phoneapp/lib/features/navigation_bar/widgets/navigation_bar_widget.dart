@@ -1,7 +1,7 @@
 import 'package:MetnaVadq/assets/colors.dart';
-import 'package:MetnaVadq/features/auth/screens/login_page.dart';
 import 'package:MetnaVadq/features/navigation_bar/notifier/navigation_notifier.dart';
-import 'package:MetnaVadq/features/posts/screens/feed.dart';
+import 'package:MetnaVadq/features/posts/screens/feed_page.dart';
+import 'package:MetnaVadq/features/search/screens/map_search_page.dart';
 import 'package:MetnaVadq/features/user/screens/profile_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,8 @@ class NavigationBarWidget extends ConsumerStatefulWidget {
 class _NavigationBarState extends ConsumerState<NavigationBarWidget> {
   static final List<Widget> _widgetOptions = <Widget>[
     const FeedPage(),
-    const ProfilePage(null),
+    MapSearchPage(),
+    ProfilePage(null),
   ];
 
 
@@ -46,9 +47,13 @@ class _NavigationBarState extends ConsumerState<NavigationBarWidget> {
               activeIcon: Icon(Icons.home),
               label: "Home"),
           BottomNavigationBarItem(
+              icon: Icon(Icons.map_outlined),
+              activeIcon: Icon(Icons.map),
+              label: "MapSearch"),
+          BottomNavigationBarItem(
               icon: Icon(Icons.person_2_outlined),
               activeIcon: Icon(Icons.person_2),
-              label: "Home"),
+              label: "Profile"),
         ],
       ),
     );

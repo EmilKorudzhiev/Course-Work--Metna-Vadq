@@ -20,14 +20,36 @@ public class FishCatchController {
 
     private final FishCatchService fishCatchService;
 
-    // TODO : make recommendation algorithm
+    //GET CATCHES WITHOUT RECOMMENDATION ALGORITHM (ONLY FOR TESTING PURPOSES)
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<List<FullFishCatchDto>> getFishCatches(
+    public ResponseEntity<? extends List<?>> getFishCatches(
             @RequestParam(name = "page-size", defaultValue = "20", required = false) Integer pageSize,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber
     ) {
         Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatches(pageSize, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // TODO : make recommendation algorithm
+    @GetMapping("feed")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<FullFishCatchDto>> getFishCatchesFeed(
+            @RequestParam(name = "page-size", defaultValue = "20", required = false) Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber
+    ) {
+        Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatchesFeed(pageSize, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("user")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<PartialFishCatchDto>> getUserFishCatches(
+            @RequestParam(name = "page-size", defaultValue = "15", required = false) Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(name = "user-id", required = false) Long userId
+    ) {
+        Optional<List<PartialFishCatchDto>> list = fishCatchService.getUserFishCatches(pageSize, pageNumber, userId);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -44,10 +66,10 @@ public class FishCatchController {
     // TODO : make date search too
     @GetMapping("find-in-radius")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<List<FullFishCatchDto>> getFishCatchesInRadius(
+    public ResponseEntity<List<MarkerFishCatchDto>> getFishCatchMarkersInRadius(
             @RequestBody SearchRadiusRequest request
     ) {
-        Optional<List<FullFishCatchDto>> list = fishCatchService.getFishCatchesInRadius(request);
+        Optional<List<MarkerFishCatchDto>> list = fishCatchService.getFishCatchMarkersInRadius(request);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
