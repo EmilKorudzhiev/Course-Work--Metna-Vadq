@@ -41,7 +41,7 @@ class MapSearchPage extends ConsumerWidget {
         body: SizedBox(
           child: Column(
             children: [
-              //TODO button with icon for search (fish / locatioan / all)
+              //TODO button with icon for searching both fish catches and locations
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -63,6 +63,9 @@ class MapSearchPage extends ConsumerWidget {
               ),
 
               //TODO Make map search
+              //TODO create providers and requests
+              //TODO make displaying fishcatches blue locations some other color
+              //TODo make them button that take them to their page
               Builder(builder: (context) {
                 if (gpsMapSearch) {
                   return Text("GPS Search");
