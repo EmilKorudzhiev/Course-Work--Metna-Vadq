@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
+import 'package:MetnaVadq/features/search/service/location_controller.dart';
 import 'package:MetnaVadq/features/search/service/map_notifier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,21 @@ class MapSearchPage extends ConsumerWidget {
 
     final locationMapSearch = ref.watch(mapLocationTypeProvider);
     final iconLocationSearch =
-        locationMapSearch ? FontAwesomeIcons.fishFins : FontAwesomeIcons.store;
+        locationMapSearch ? FontAwesomeIcons.store : FontAwesomeIcons.fishFins;
+    print(locationMapSearch);
 
     final markerPoints = ref.watch(mapNotifierProvider);
     print(markerPoints.toString());
+
+
+    var location = null;
+    try {
+      final locationProvider = ref.watch(positionProvider);
+      location = LatLng(locationProvider.value!.latitude, locationProvider.value!.longitude);
+      print(location);
+    } catch (e) {
+      location = e.toString();
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -68,16 +80,21 @@ class MapSearchPage extends ConsumerWidget {
               //TODo make them button that take them to their page
               Builder(builder: (context) {
                 if (gpsMapSearch) {
-                  return Text("GPS Search");
+                  return Column(
+                    children: [
+                      Text(location.toString()),
+                      Text("GPS Search"),
+                    ],
+                  );
                 } else {
                   return Text("Location Search");
                 }
               }),
               Builder(builder: (context) {
                 if (locationMapSearch) {
-                  return Text("Fish");
-                } else {
                   return Text("Location");
+                } else {
+                  return Text("Fish");
                 }
               }),
               ElevatedButton(
@@ -121,7 +138,8 @@ class MapSearchPage extends ConsumerWidget {
                                 child: const Icon(Icons.location_pin),
                               ))
                           .toList(),
-                    )
+                    ),
+
                   ],
                 ),
               ),

@@ -1,4 +1,21 @@
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+
+
+final positionProvider = StreamProvider.autoDispose<Position?>((ref) {
+  final locationController = ref.watch(locationControllerProvider);
+  return Stream.periodic(const Duration(seconds: 1), (i) {
+    return locationController.getCurrentPosition();
+  }).asyncMap((event) async {
+    return await event;
+  });
+});
+
+final locationControllerProvider = Provider((ref) {
+  return LocationController();
+});
 
 class LocationController {
   const LocationController();
