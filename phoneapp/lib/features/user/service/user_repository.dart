@@ -11,10 +11,10 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 });
 
 class UserRepository {
-  final Api _api;
+  final DioClient _api;
   final SecureStorageManager _storage;
 
-  UserRepository({required Api api, required SecureStorageManager storage})
+  UserRepository({required DioClient api, required SecureStorageManager storage})
       : _api = api,
         _storage = storage;
 

@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:MetnaVadq/assets/colors.dart';
+import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/service/location_controller.dart';
 import 'package:MetnaVadq/features/search/service/map_notifier.dart';
@@ -9,6 +12,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
+
+//TODO napravi search
 
 //Search or GPS
 final mapSearchTypeProvider = StateProvider<bool>((ref) {
@@ -20,31 +25,59 @@ final mapLocationTypeProvider = StateProvider<bool>((ref) {
   return false;
 });
 
+//GPS radius
+final gpsRadiusProvider = Provider<Map<int, String>>((ref) => {
+      500: "500m",
+      1000: "1km",
+      2500: "2.5km",
+      5000: "5km",
+      10000: "10km",
+      25000: "25km",
+      50000: "50km",
+    });
+
+final gpsRadiusStateProvider = StateProvider<int>((ref) {
+  return 5000;
+});
+
 class MapSearchPage extends ConsumerWidget {
   const MapSearchPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
+    //Type of search (GPS or Search)
     final gpsMapSearch = ref.watch(mapSearchTypeProvider);
     final iconMapSearch = gpsMapSearch ? Icons.gps_fixed : Icons.search;
 
+    //Radius of search with GPS
+    var radius = ref.read(gpsRadiusProvider);
+    var selectedRadius = ref.watch(gpsRadiusStateProvider);
+
+    //Type of search (Fish or Location)
     final locationMapSearch = ref.watch(mapLocationTypeProvider);
     final iconLocationSearch =
         locationMapSearch ? FontAwesomeIcons.store : FontAwesomeIcons.fishFins;
     print(locationMapSearch);
 
+    //Markers
     final markerPoints = ref.watch(mapNotifierProvider);
     print(markerPoints.toString());
 
-
-    var location = null;
-    try {
-      final locationProvider = ref.watch(positionProvider);
-      location = LatLng(locationProvider.value!.latitude, locationProvider.value!.longitude);
-      print(location);
-    } catch (e) {
-      location = e.toString();
+    //GPS location
+    var locationProvider = ref.watch(positionProvider);
+    var location;
+    if (locationProvider.hasError) {
+      if (locationProvider.error is GpsLocationException) {
+        location = (locationProvider.error as GpsLocationException).message;
+      }
+    } else {
+      location = locationProvider.value;
     }
+    print(location);
+
+    //Search bar controller
+    final searchBarController = TextEditingController();
+
 
     return Scaffold(
         appBar: AppBar(
@@ -80,23 +113,86 @@ class MapSearchPage extends ConsumerWidget {
               //TODo make them button that take them to their page
               Builder(builder: (context) {
                 if (gpsMapSearch) {
-                  return Column(
-                    children: [
-                      Text(location.toString()),
-                      Text("GPS Search"),
-                    ],
+                  return Container(
+                    child: Builder(builder: (context) {
+                      if (location != null && location is! String) {
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    "Търсене на ${locationMapSearch ? "локации" : "улови"} в радиус от "),
+                                DropdownButton<int>(
+                                  value: selectedRadius,
+                                  items: radius.keys
+                                      .map((e) => DropdownMenuItem<int>(
+                                            value: e,
+                                            child: Text(radius[e]!),
+                                          ))
+                                      .toList(),
+                                  onChanged: (value) {
+                                    ref
+                                        .read(gpsRadiusStateProvider.notifier)
+                                        .state = value!;
+                                  },
+                                ),
+                              ],
+                            ),
+                            //TODO make search button work
+                            ElevatedButton(
+                              onPressed: () {
+                                print("Working");
+                              },
+                              child: Text('Търси'),
+                            ),
+                          ],
+                        );
+                      } else if (location == null) {
+                        return const SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return Text(location.toString());
+                      }
+                    }),
                   );
                 } else {
-                  return Text("Location Search");
+                  return Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        child: SearchBar(
+                          hintText: "Търсене на локация",
+                          onChanged: (text) {
+                            //TODO search completeon with mapbox search api
+                            print(searchBarController.text);
+                          },
+                          leading: IconButton(
+                            onPressed: () {
+                              //TODO call mapbox geocoding api to convert address to coordinates
+                              print("Search");
+                            },
+                            icon: const Icon(Icons.search),
+                          ),
+                          controller: searchBarController,
+                          backgroundColor: MaterialStateColor.resolveWith(
+                              (states) => AppColors.secondary),
+                          padding: MaterialStateProperty.resolveWith(
+                            (states) => const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 5.0),
+                          ),
+
+                        ),
+                      ),
+                      Text("Location Search")
+                    ],
+                  );
                 }
               }),
-              Builder(builder: (context) {
-                if (locationMapSearch) {
-                  return Text("Location");
-                } else {
-                  return Text("Fish");
-                }
-              }),
+              //TODO remove debug location button \/
               ElevatedButton(
                 onPressed: () {
                   var random = Random();
@@ -109,7 +205,6 @@ class MapSearchPage extends ConsumerWidget {
                 },
                 child: Text('Set location'),
               ),
-              // TODO make button work ^^^^
 
               Expanded(
                 child: FlutterMap(
@@ -139,7 +234,24 @@ class MapSearchPage extends ConsumerWidget {
                               ))
                           .toList(),
                     ),
-
+                    if (gpsMapSearch && location != null && location is! String)
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point:
+                                LatLng(location.latitude, location.longitude),
+                            width: 60,
+                            height: 60,
+                            child: const Icon(
+                              Icons.gps_fixed,
+                              shadows: <Shadow>[
+                                Shadow(color: Colors.black, blurRadius: 5.0),
+                              ],
+                              color: Colors.indigo,
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),

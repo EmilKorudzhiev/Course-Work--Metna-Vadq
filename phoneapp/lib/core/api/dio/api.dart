@@ -3,16 +3,16 @@ import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final apiProvider = Provider<Api>((ref) {
+final apiProvider = Provider<DioClient>((ref) {
   final secureStorageManager = ref.read(secureStorageProvider);
-  return Api(storage: secureStorageManager);
+  return DioClient(storage: secureStorageManager);
 });
 
-class Api {
+class DioClient {
   Dio dio = Dio();
   final SecureStorageManager _storage;
 
-  Api({required SecureStorageManager storage}) : _storage = storage {
+  DioClient({required SecureStorageManager storage}) : _storage = storage {
     dio.interceptors.add(
       InterceptorsWrapper(
         onError: (e, handler) async {

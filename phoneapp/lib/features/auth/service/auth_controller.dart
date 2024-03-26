@@ -14,10 +14,10 @@ final authProvider = ChangeNotifierProvider<AuthController>((ref) {
 });
 
 class AuthController with ChangeNotifier {
-  final Api _api;
+  final DioClient _api;
   final SecureStorageManager _secureStorage;
 
-  AuthController({required Api api, required SecureStorageManager secureStorage}) : _api = api, _secureStorage = secureStorage;
+  AuthController({required DioClient api, required SecureStorageManager secureStorage}) : _api = api, _secureStorage = secureStorage;
 
   Future<bool> isLoggedIn() async {
     if(await _secureStorage.areTokensSet()){

@@ -11,10 +11,10 @@ final postRepositoryProvider = Provider<PostRepository>((ref) {
 });
 
 class PostRepository {
-  final Api _api;
+  final DioClient _api;
   final SecureStorageManager _storage;
 
-  PostRepository({required Api api, required SecureStorageManager storage}) : _api = api, _storage = storage;
+  PostRepository({required DioClient api, required SecureStorageManager storage}) : _api = api, _storage = storage;
 
   Future<Response?> getPosts(int pageNum, int pageSize) async {
     try {
@@ -37,7 +37,6 @@ class PostRepository {
       print("ERROR!!!!!!");
       print(e);
     }
-
     return null;
   }
 
