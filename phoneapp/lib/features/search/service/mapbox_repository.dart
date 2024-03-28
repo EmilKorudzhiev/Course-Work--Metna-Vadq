@@ -20,14 +20,16 @@ class MapboxRepository {
   Future<Response?> getSuggestion(String query) async {
     try {
       final response = await _api.dio.get(
-        "https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json",
+        "https://api.mapbox.com/search/searchbox/v1/suggest",
         queryParameters: {
+          "q": query,
           "access_token":
               "pk.eyJ1IjoiZW1rb2V4ZSIsImEiOiJjbHRsbnowZWYxODhmMnBxdnptZTU4ZDE3In0.Xc_w_0i9kPbpEG8DA42CYg",
           "session_token": await _storage.getRefreshToken(),
           "limit": 5,
         },
       );
+      print(response);
       return response;
     } on DioException catch (e) {
       rethrow;

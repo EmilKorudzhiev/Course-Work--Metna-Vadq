@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:MetnaVadq/features/user/data/partial_user_model.dart';
 
 class FullPostModel {

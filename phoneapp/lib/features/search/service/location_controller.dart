@@ -4,14 +4,21 @@ import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+final isPositionActiveProvider = StateProvider<bool>((ref) {
+  return false;
+});
 
 final positionProvider = StreamProvider.autoDispose<Position?>((ref) {
-  final locationController = ref.watch(locationControllerProvider);
-  return Stream.periodic(const Duration(seconds: 1), (i) {
-    return locationController.getCurrentPosition();
-  }).asyncMap((event) async {
-    return await event;
-  });
+  if (!ref.watch(isPositionActiveProvider)) {
+    return const Stream.empty();
+  } else {
+    final locationController = ref.watch(locationControllerProvider);
+    return Stream.periodic(const Duration(seconds: 1), (i) {
+      return locationController.getCurrentPosition();
+    }).asyncMap((event) async {
+      return await event;
+    });
+  }
 });
 
 final locationControllerProvider = Provider((ref) {

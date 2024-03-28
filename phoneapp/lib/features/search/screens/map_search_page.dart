@@ -6,6 +6,7 @@ import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/service/location_controller.dart';
 import 'package:MetnaVadq/features/search/service/map_notifier.dart';
+import 'package:MetnaVadq/features/search/service/mapbox_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -14,11 +15,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
 //TODO napravi search
-
-//Search or GPS
-final mapSearchTypeProvider = StateProvider<bool>((ref) {
-  return false;
-});
 
 //Fish or Location
 final mapLocationTypeProvider = StateProvider<bool>((ref) {
@@ -40,13 +36,17 @@ final gpsRadiusStateProvider = StateProvider<int>((ref) {
   return 5000;
 });
 
+// final locationSearchBarProvider = StateProvider<String>((ref) {
+//   return "";
+// });
+
 class MapSearchPage extends ConsumerWidget {
   const MapSearchPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
     //Type of search (GPS or Search)
-    final gpsMapSearch = ref.watch(mapSearchTypeProvider);
+    final gpsMapSearch = ref.watch(isPositionActiveProvider);
     final iconMapSearch = gpsMapSearch ? Icons.gps_fixed : Icons.search;
 
     //Radius of search with GPS
@@ -76,8 +76,8 @@ class MapSearchPage extends ConsumerWidget {
     print(location);
 
     //Search bar controller
+    //final searchBarController = TextEditingController(text: ref.read(locationSearchBarProvider));
     final searchBarController = TextEditingController();
-
 
     return Scaffold(
         appBar: AppBar(
@@ -92,8 +92,8 @@ class MapSearchPage extends ConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () {
-                      ref.read(mapSearchTypeProvider.notifier).state =
-                          !ref.read(mapSearchTypeProvider.notifier).state;
+                      ref.read(isPositionActiveProvider.notifier).state =
+                          !ref.read(isPositionActiveProvider.notifier).state;
                     },
                     icon: Icon(iconMapSearch),
                   ),
@@ -164,28 +164,62 @@ class MapSearchPage extends ConsumerWidget {
                     children: [
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.95,
-                        child: SearchBar(
-                          hintText: "Търсене на локация",
-                          onChanged: (text) {
-                            //TODO search completeon with mapbox search api
-                            print(searchBarController.text);
-                          },
-                          leading: IconButton(
-                            onPressed: () {
-                              //TODO call mapbox geocoding api to convert address to coordinates
-                              print("Search");
-                            },
-                            icon: const Icon(Icons.search),
-                          ),
-                          controller: searchBarController,
-                          backgroundColor: MaterialStateColor.resolveWith(
-                              (states) => AppColors.secondary),
-                          padding: MaterialStateProperty.resolveWith(
-                            (states) => const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 5.0),
-                          ),
+                        child:
+                        Autocomplete<String>(optionsBuilder:
+                            (TextEditingValue textEditingValue) async {
+                          if (textEditingValue.text.isEmpty) {
+                            return const Iterable<String>.empty();
+                          }
 
-                        ),
+                          await ref.read(mapboxControllerProvider).getSuggestion(textEditingValue.text);
+
+
+                          //TODO make mapbox suggestion display
+                          return ['One', 'Two', 'Three', 'Four', 'Five']
+                              .where((String option) =>
+                                  option.contains(textEditingValue.text))
+                              .toList();
+                        }, fieldViewBuilder: (BuildContext context,
+                            TextEditingController fieldTextEditingController,
+                            FocusNode fieldFocusNode,
+                            VoidCallback onFieldSubmitted) {
+                          // Implement the text field UI
+                          return SearchBar(
+                            controller: fieldTextEditingController,
+                            focusNode: fieldFocusNode,
+                            onChanged: (text) {
+                              // Update suggestions based on user input
+                              // Implement the logic to filter and refresh suggestions
+                            },
+                            onSubmitted: (text) {
+                              // Handle the submission of the selected suggestion
+                              // Implement the logic for the selection action
+                            },
+                          );
+                        }),
+
+                        // SearchBar(
+                        //   hintText: "Търсене на локация",
+                        //   onChanged: (text) {
+                        //     ref.read(locationSearchBarProvider.notifier).state = text;
+                        //     print(searchBarController.text);
+                        //   },
+                        //   leading: IconButton(
+                        //     onPressed: () {
+                        //       //TODO call mapbox geocoding api to convert address to coordinates
+                        //       print("Search");
+                        //     },
+                        //     icon: const Icon(Icons.search),
+                        //   ),
+                        //   controller: searchBarController,
+                        //   backgroundColor: MaterialStateColor.resolveWith(
+                        //       (states) => AppColors.secondary),
+                        //   padding: MaterialStateProperty.resolveWith(
+                        //     (states) => const EdgeInsets.symmetric(
+                        //         horizontal: 8.0, vertical: 5.0),
+                        //   ),
+                        //
+                        // ),
                       ),
                       Text("Location Search")
                     ],
