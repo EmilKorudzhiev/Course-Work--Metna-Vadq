@@ -1,24 +1,22 @@
-import 'dart:async';
-import 'dart:math';
-
-import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
-import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
+import 'package:MetnaVadq/features/search/data/search_suggestion_model.dart';
 import 'package:MetnaVadq/features/search/service/location_controller.dart';
 import 'package:MetnaVadq/features/search/service/map_notifier.dart';
 import 'package:MetnaVadq/features/search/service/mapbox_controller.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
-//TODO napravi search
-
 //Fish or Location
 final mapLocationTypeProvider = StateProvider<bool>((ref) {
   return false;
+});
+
+//Current location that was inputted via search or GPS
+final searchedLocationProvider = StateProvider<LatLng?>((ref) {
+  return null;
 });
 
 //GPS radius
@@ -36,10 +34,6 @@ final gpsRadiusStateProvider = StateProvider<int>((ref) {
   return 5000;
 });
 
-// final locationSearchBarProvider = StateProvider<String>((ref) {
-//   return "";
-// });
-
 class MapSearchPage extends ConsumerWidget {
   const MapSearchPage({super.key});
 
@@ -52,6 +46,9 @@ class MapSearchPage extends ConsumerWidget {
     //Radius of search with GPS
     var radius = ref.read(gpsRadiusProvider);
     var selectedRadius = ref.watch(gpsRadiusStateProvider);
+
+    //Coordinates of the searched location
+    final searchedLocation = ref.watch(searchedLocationProvider);
 
     //Type of search (Fish or Location)
     final locationMapSearch = ref.watch(mapLocationTypeProvider);
@@ -75,9 +72,7 @@ class MapSearchPage extends ConsumerWidget {
     }
     print(location);
 
-    //Search bar controller
-    //final searchBarController = TextEditingController(text: ref.read(locationSearchBarProvider));
-    final searchBarController = TextEditingController();
+    MapController mapController = MapController();
 
     return Scaffold(
         appBar: AppBar(
@@ -115,40 +110,7 @@ class MapSearchPage extends ConsumerWidget {
                 if (gpsMapSearch) {
                   return Container(
                     child: Builder(builder: (context) {
-                      if (location != null && location is! String) {
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                    "Търсене на ${locationMapSearch ? "локации" : "улови"} в радиус от "),
-                                DropdownButton<int>(
-                                  value: selectedRadius,
-                                  items: radius.keys
-                                      .map((e) => DropdownMenuItem<int>(
-                                            value: e,
-                                            child: Text(radius[e]!),
-                                          ))
-                                      .toList(),
-                                  onChanged: (value) {
-                                    ref
-                                        .read(gpsRadiusStateProvider.notifier)
-                                        .state = value!;
-                                  },
-                                ),
-                              ],
-                            ),
-                            //TODO make search button work
-                            ElevatedButton(
-                              onPressed: () {
-                                print("Working");
-                              },
-                              child: Text('Търси'),
-                            ),
-                          ],
-                        );
-                      } else if (location == null) {
+                      if (location == null) {
                         return const SizedBox(
                           height: 20.0,
                           width: 20.0,
@@ -164,91 +126,171 @@ class MapSearchPage extends ConsumerWidget {
                     children: [
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.95,
-                        child:
-                        Autocomplete<String>(optionsBuilder:
-                            (TextEditingValue textEditingValue) async {
-                          if (textEditingValue.text.isEmpty) {
-                            return const Iterable<String>.empty();
-                          }
+                        child: Autocomplete(
+                          optionsBuilder:
+                              (TextEditingValue textEditingValue) async {
+                            if (textEditingValue.text.isEmpty) {
+                              return const Iterable<
+                                  SearchSuggestionModel>.empty();
+                            }
+                            var suggestions = ref.read(suggestionsProvider);
+                            return suggestions(textEditingValue.text);
+                          },
+                          optionsViewBuilder: (context, onSelected, options) {
+                            return Material(
+                                elevation: 4.0,
+                                child: ListView.separated(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 0),
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const Divider(),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final suggestion = options.elementAt(index);
+                                    return ListTile(
+                                      title: Text(suggestion.name),
+                                      subtitle: Builder(builder: (context) {
+                                        if (suggestion.address != null) {
+                                          return Text(suggestion.address!);
+                                        } else if (suggestion.namePreferred !=
+                                            null) {
+                                          return Text(
+                                              suggestion.namePreferred!);
+                                        } else {
+                                          return Text(
+                                              suggestion.placeFormatted);
+                                        }
+                                      }),
+                                      onTap: () async {
+                                        FocusScope.of(context).unfocus();
 
-                          await ref.read(mapboxControllerProvider).getSuggestion(textEditingValue.text);
-
-
-                          //TODO make mapbox suggestion display
-                          return ['One', 'Two', 'Three', 'Four', 'Five']
-                              .where((String option) =>
-                                  option.contains(textEditingValue.text))
-                              .toList();
-                        }, fieldViewBuilder: (BuildContext context,
-                            TextEditingController fieldTextEditingController,
-                            FocusNode fieldFocusNode,
-                            VoidCallback onFieldSubmitted) {
-                          // Implement the text field UI
-                          return SearchBar(
-                            controller: fieldTextEditingController,
-                            focusNode: fieldFocusNode,
-                            onChanged: (text) {
-                              // Update suggestions based on user input
-                              // Implement the logic to filter and refresh suggestions
-                            },
-                            onSubmitted: (text) {
-                              // Handle the submission of the selected suggestion
-                              // Implement the logic for the selection action
-                            },
-                          );
-                        }),
-
-                        // SearchBar(
-                        //   hintText: "Търсене на локация",
-                        //   onChanged: (text) {
-                        //     ref.read(locationSearchBarProvider.notifier).state = text;
-                        //     print(searchBarController.text);
-                        //   },
-                        //   leading: IconButton(
-                        //     onPressed: () {
-                        //       //TODO call mapbox geocoding api to convert address to coordinates
-                        //       print("Search");
-                        //     },
-                        //     icon: const Icon(Icons.search),
-                        //   ),
-                        //   controller: searchBarController,
-                        //   backgroundColor: MaterialStateColor.resolveWith(
-                        //       (states) => AppColors.secondary),
-                        //   padding: MaterialStateProperty.resolveWith(
-                        //     (states) => const EdgeInsets.symmetric(
-                        //         horizontal: 8.0, vertical: 5.0),
-                        //   ),
-                        //
-                        // ),
+                                        //TODO make it place markers that are from a provider
+                                        var searchedLocationResult = await ref
+                                            .read(mapboxControllerProvider)
+                                            .getPlaceCoordinates(
+                                                "${suggestion.name} ${suggestion.placeFormatted}");
+                                        ref
+                                            .read(searchedLocationProvider
+                                                .notifier)
+                                            .state = searchedLocationResult;
+                                        mapController.move(
+                                            searchedLocationResult!, 9.0);
+                                        onSelected(suggestion);
+                                      },
+                                    );
+                                  },
+                                  itemCount: options.length,
+                                ));
+                          },
+                          fieldViewBuilder: (BuildContext context,
+                              TextEditingController fieldTextEditingController,
+                              FocusNode fieldFocusNode,
+                              VoidCallback onFieldSubmitted) {
+                            return TextField(
+                                controller: fieldTextEditingController,
+                                focusNode: fieldFocusNode,
+                                onTap: onFieldSubmitted,
+                                decoration: const InputDecoration(
+                                  hintText: "Търсене",
+                                  border: OutlineInputBorder(),
+                                ));
+                          },
+                          onSelected: (SearchSuggestionModel selection) {
+                            print(selection.name);
+                          },
+                          displayStringForOption:
+                              (SearchSuggestionModel option) => option.name,
+                        ),
                       ),
-                      Text("Location Search")
                     ],
                   );
                 }
               }),
-              //TODO remove debug location button \/
-              ElevatedButton(
-                onPressed: () {
-                  var random = Random();
-                  double randomLat = 41 + random.nextDouble() * (43.6 - 41);
-                  double randomLong = 23 + random.nextDouble() * (28.1 - 22);
 
-                  ref.read(mapNotifierProvider.notifier).addPostMarker(
-                      PostMarkerModel(
-                          id: 1, latitude: randomLat, longitude: randomLong));
-                },
-                child: Text('Set location'),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          "Търсене на ${locationMapSearch ? "локации" : "улови"} в радиус от "),
+                      DropdownButton<int>(
+                        value: selectedRadius,
+                        items: radius.keys
+                            .map((e) => DropdownMenuItem<int>(
+                                  value: e,
+                                  child: Text(radius[e]!),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          ref.read(gpsRadiusStateProvider.notifier).state =
+                              value!;
+                        },
+                      ),
+                    ],
+                  ),
+                  Builder(builder: (context) {
+                    if (gpsMapSearch &&
+                        location != null &&
+                        location is! String) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          //TODO make gps refresh search button work
+                          //TODO make it place markers that are from a provider
+                          //TODO a shared provider with search markers when chaging between search modes make the provider null so when the gps is enabled and the provider is null it searches for locations immediately
+                          ElevatedButton(
+                            onPressed: () {
+                              print("Working");
+                            },
+                            child: const Text('Поднови'),
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                mapController.move(
+                                    LatLng(
+                                        location.latitude, location.longitude),
+                                    9.0);
+                              },
+                              child: const Text("Центрирай")),
+                        ],
+                      );
+                    } else if (!gpsMapSearch && searchedLocation != null) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                mapController.move(
+                                    LatLng(searchedLocation.latitude,
+                                        searchedLocation.longitude),
+                                    9.0);
+                              },
+                              child: const Text("Центрирай")),
+                        ],
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  })
+                ],
               ),
 
               Expanded(
                 child: FlutterMap(
+                  mapController: mapController,
                   options: MapOptions(
-                      initialCenter: LatLng(42.64, 25.2),
+                      initialCenter: searchedLocation != null
+                          ? LatLng(searchedLocation.latitude,
+                              searchedLocation.longitude)
+                          : const LatLng(42.69, 25.22),
                       initialZoom: 8,
+                      keepAlive: true,
                       cameraConstraint: CameraConstraint.contain(
                           bounds: LatLngBounds(
-                        LatLng(-90, -180),
-                        LatLng(90, 180),
+                        const LatLng(-90, -180),
+                        const LatLng(90, 180),
                       ))),
                   children: [
                     TileLayer(
@@ -274,8 +316,26 @@ class MapSearchPage extends ConsumerWidget {
                           Marker(
                             point:
                                 LatLng(location.latitude, location.longitude),
-                            width: 60,
-                            height: 60,
+                            width: 80,
+                            height: 80,
+                            child: const Icon(
+                              Icons.gps_fixed,
+                              shadows: <Shadow>[
+                                Shadow(color: Colors.black, blurRadius: 5.0),
+                              ],
+                              color: Colors.indigo,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (!gpsMapSearch && searchedLocation != null)
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(searchedLocation.latitude,
+                                searchedLocation.longitude),
+                            width: 80,
+                            height: 80,
                             child: const Icon(
                               Icons.gps_fixed,
                               shadows: <Shadow>[

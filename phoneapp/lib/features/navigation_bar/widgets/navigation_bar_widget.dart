@@ -8,23 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NavigationBarWidget extends ConsumerStatefulWidget {
+class NavigationBarWidget extends ConsumerWidget {
   const NavigationBarWidget({super.key});
 
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NavigationBarState();
-}
-
-class _NavigationBarState extends ConsumerState<NavigationBarWidget> {
   static final List<Widget> _widgetOptions = <Widget>[
     const FeedPage(),
-    MapSearchPage(),
+    const MapSearchPage(),
     ProfilePage(null),
   ];
 
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     var navIndex = ref.watch(navProvider);
     return Scaffold(
       body: Center(

@@ -29,7 +29,6 @@ class MapboxRepository {
           "limit": 5,
         },
       );
-      print(response);
       return response;
     } on DioException catch (e) {
       rethrow;
@@ -40,4 +39,25 @@ class MapboxRepository {
     return null;
   }
 
+  Future<Response?> getPlaceCoordinates(String placeDetails) async {
+    try {
+      print(placeDetails);
+      final response = await _api.dio.get(
+        "https://api.mapbox.com/geocoding/v5/mapbox.places/$placeDetails.json",
+        queryParameters: {
+          "access_token":
+              "pk.eyJ1IjoiZW1rb2V4ZSIsImEiOiJjbHRsbnowZWYxODhmMnBxdnptZTU4ZDE3In0.Xc_w_0i9kPbpEG8DA42CYg",
+          "session_token": await _storage.getRefreshToken(),
+          "limit": 5,
+        },
+      );
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
 }
