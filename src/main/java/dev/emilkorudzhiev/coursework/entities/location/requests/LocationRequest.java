@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.entities.location;
+package dev.emilkorudzhiev.coursework.entities.location.requests;
 
 import dev.emilkorudzhiev.coursework.enums.LocationType;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,8 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationRequest {
-    private LocationType type;
-    private Point coordinates;
+    private String type;
+    private double latitude;
+    private double longitude;
     private String description;
 }

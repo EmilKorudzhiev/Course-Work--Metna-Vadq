@@ -1,7 +1,7 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.auth.AuthenticationService;
-import dev.emilkorudzhiev.coursework.auth.RegisterRequest;
+import dev.emilkorudzhiev.coursework.auth.requests.RegisterRequest;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

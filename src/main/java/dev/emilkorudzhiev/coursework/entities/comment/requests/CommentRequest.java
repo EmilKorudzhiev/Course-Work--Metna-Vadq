@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.entities.comment;
+package dev.emilkorudzhiev.coursework.entities.comment.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

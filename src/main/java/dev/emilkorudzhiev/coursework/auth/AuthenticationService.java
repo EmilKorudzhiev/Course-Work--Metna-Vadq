@@ -1,5 +1,7 @@
 package dev.emilkorudzhiev.coursework.auth;
 
+import dev.emilkorudzhiev.coursework.auth.requests.AuthenticationRequest;
+import dev.emilkorudzhiev.coursework.auth.requests.RegisterRequest;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.security.JwtService;
 import dev.emilkorudzhiev.coursework.entities.user.User;

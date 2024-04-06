@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.auth;
+package dev.emilkorudzhiev.coursework.auth.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

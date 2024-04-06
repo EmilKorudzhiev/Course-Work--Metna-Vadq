@@ -2,6 +2,8 @@ package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 import dev.emilkorudzhiev.coursework.aws.s3.S3Buckets;
 import dev.emilkorudzhiev.coursework.aws.s3.S3Service;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.FishCatchRequest;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.SearchRadiusRequest;
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import dev.emilkorudzhiev.coursework.entities.user.UserService;

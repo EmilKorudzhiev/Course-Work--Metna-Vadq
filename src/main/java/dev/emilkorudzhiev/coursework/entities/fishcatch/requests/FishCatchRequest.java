@@ -1,10 +1,9 @@
-package dev.emilkorudzhiev.coursework.entities.fishcatch;
+package dev.emilkorudzhiev.coursework.entities.fishcatch.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder

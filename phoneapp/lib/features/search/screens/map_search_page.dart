@@ -1,10 +1,11 @@
 import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
+import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/search_suggestion_model.dart';
 import 'package:MetnaVadq/features/search/service/location_controller.dart';
-import 'package:MetnaVadq/features/search/service/map_notifier.dart';
-import 'package:MetnaVadq/features/search/service/mapbox_controller.dart';
+import 'package:MetnaVadq/features/search/service/map_search_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
@@ -14,13 +15,20 @@ final mapLocationTypeProvider = StateProvider<bool>((ref) {
   return false;
 });
 
-//Current location that was inputted via search or GPS
+//Current location searched that was inputted via search or GPS
 final searchedLocationProvider = StateProvider<LatLng?>((ref) {
   return null;
 });
 
+//Search results
+//TODO make one for fish catches and one for locations
+final searchedLocationNearbyResultCoordinatesProvider =
+    StateProvider<List<PostMarkerModel>>((ref) {
+  return [];
+});
+
 //GPS radius
-final gpsRadiusProvider = Provider<Map<int, String>>((ref) => {
+final gpsRadiusOptionsProvider = Provider<Map<int, String>>((ref) => {
       500: "500m",
       1000: "1km",
       2500: "2.5km",
@@ -44,7 +52,7 @@ class MapSearchPage extends ConsumerWidget {
     final iconMapSearch = gpsMapSearch ? Icons.gps_fixed : Icons.search;
 
     //Radius of search with GPS
-    var radius = ref.read(gpsRadiusProvider);
+    var radius = ref.read(gpsRadiusOptionsProvider);
     var selectedRadius = ref.watch(gpsRadiusStateProvider);
 
     //Coordinates of the searched location
@@ -57,8 +65,8 @@ class MapSearchPage extends ConsumerWidget {
     print(locationMapSearch);
 
     //Markers
-    final markerPoints = ref.watch(mapNotifierProvider);
-    print(markerPoints.toString());
+    final markerResults =
+        ref.watch(searchedLocationNearbyResultCoordinatesProvider);
 
     //GPS location
     var locationProvider = ref.watch(positionProvider);
@@ -81,7 +89,7 @@ class MapSearchPage extends ConsumerWidget {
         body: SizedBox(
           child: Column(
             children: [
-              //TODO button with icon for searching both fish catches and locations
+              //TODO button option for searching both fish catches and locations
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -102,10 +110,9 @@ class MapSearchPage extends ConsumerWidget {
                 ],
               ),
 
-              //TODO Make map search
-              //TODO create providers and requests
-              //TODO make displaying fishcatches blue locations some other color
-              //TODo make them button that take them to their page
+              //TODO make it for fish catches and locations
+              //TODO make displaying fish catches blue locations some other color
+              //TODO make them button that take them to their page
               Builder(builder: (context) {
                 if (gpsMapSearch) {
                   return Container(
@@ -117,7 +124,7 @@ class MapSearchPage extends ConsumerWidget {
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        return Text(location.toString());
+                        return const SizedBox.shrink();
                       }
                     }),
                   );
@@ -165,18 +172,29 @@ class MapSearchPage extends ConsumerWidget {
                                       onTap: () async {
                                         FocusScope.of(context).unfocus();
 
-                                        //TODO make it place markers that are from a provider
                                         var searchedLocationResult = await ref
                                             .read(mapboxControllerProvider)
                                             .getPlaceCoordinates(
                                                 "${suggestion.name} ${suggestion.placeFormatted}");
+
                                         ref
                                             .read(searchedLocationProvider
                                                 .notifier)
                                             .state = searchedLocationResult;
                                         mapController.move(
-                                            searchedLocationResult!, 9.0);
+                                            searchedLocationResult!, 12.5);
                                         onSelected(suggestion);
+
+                                        ref
+                                                .watch(
+                                                    searchedLocationNearbyResultCoordinatesProvider
+                                                        .notifier)
+                                                .state =
+                                            await ref
+                                                .read(mapboxControllerProvider)
+                                                .getSearchedPlaceResult(
+                                                    searchedLocationResult,
+                                                    selectedRadius);
                                       },
                                     );
                                   },
@@ -237,12 +255,27 @@ class MapSearchPage extends ConsumerWidget {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          //TODO make gps refresh search button work
-                          //TODO make it place markers that are from a provider
-                          //TODO a shared provider with search markers when chaging between search modes make the provider null so when the gps is enabled and the provider is null it searches for locations immediately
+                          //TODO a shared provider with search markers when changing between search modes make the provider null so when the gps is enabled and the provider is null it searches for locations immediately
                           ElevatedButton(
-                            onPressed: () {
-                              print("Working");
+                            onPressed: () async {
+                              ref
+                                      .watch(
+                                          searchedLocationNearbyResultCoordinatesProvider
+                                              .notifier)
+                                      .state =
+                                  await ref
+                                      .read(mapboxControllerProvider)
+                                      .getSearchedPlaceResult(
+                                          LatLng(location.latitude,
+                                              location.longitude),
+                                          selectedRadius);
+                              mapController.move(
+                                  LatLng(location.latitude, location.longitude),
+                                  12.5);
+                              ref
+                                      .read(searchedLocationProvider.notifier)
+                                      .state =
+                                  LatLng(location.latitude, location.longitude);
                             },
                             child: const Text('Поднови'),
                           ),
@@ -251,7 +284,7 @@ class MapSearchPage extends ConsumerWidget {
                                 mapController.move(
                                     LatLng(
                                         location.latitude, location.longitude),
-                                    9.0);
+                                    12.5);
                               },
                               child: const Text("Центрирай")),
                         ],
@@ -265,7 +298,7 @@ class MapSearchPage extends ConsumerWidget {
                                 mapController.move(
                                     LatLng(searchedLocation.latitude,
                                         searchedLocation.longitude),
-                                    9.0);
+                                    12.5);
                               },
                               child: const Text("Центрирай")),
                         ],
@@ -285,7 +318,7 @@ class MapSearchPage extends ConsumerWidget {
                           ? LatLng(searchedLocation.latitude,
                               searchedLocation.longitude)
                           : const LatLng(42.69, 25.22),
-                      initialZoom: 8,
+                      initialZoom: searchedLocation != null ? 12.5 : 8.0,
                       keepAlive: true,
                       cameraConstraint: CameraConstraint.contain(
                           bounds: LatLngBounds(
@@ -299,16 +332,41 @@ class MapSearchPage extends ConsumerWidget {
                           'tiles/256/{z}/{x}/{y}@2x?'
                           'access_token=pk.eyJ1IjoiZW1rb2V4ZSIsImEiOiJjbHRsbnowZWYxODhmMnBxdnptZTU4ZDE3In0.Xc_w_0i9kPbpEG8DA42CYg',
                     ),
-                    MarkerLayer(
-                      markers: markerPoints
-                          .map((element) => Marker(
-                                point:
-                                    LatLng(element.latitude, element.longitude),
-                                width: 60,
-                                height: 60,
-                                child: const Icon(Icons.location_pin),
-                              ))
-                          .toList(),
+                    MarkerClusterLayerWidget(
+                      options: MarkerClusterLayerOptions(
+                        maxClusterRadius: 120,
+                        size: const Size(45, 45),
+                        markers: markerResults
+                            .map((element) => Marker(
+                                  point: LatLng(
+                                      element.latitude, element.longitude),
+                                  width: 50,
+                                  height: 50,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.location_pin,
+                                      size: 30,
+                                    ),
+                                    onPressed: () {
+                                      //TODO take to the fish catch post page
+                                      print("Working${element.id}" +
+                                          markerResults.length.toString());
+                                    },
+                                  ),
+                                ))
+                            .toList(),
+                        polygonOptions: const PolygonOptions(
+                            borderColor: Colors.blueAccent,
+                            color: Colors.black54,
+                            borderStrokeWidth: 3),
+                        builder: (context, markers) {
+                          return FloatingActionButton(
+                            onPressed: null,
+                            backgroundColor: Colors.blue,
+                            child: Text(markers.length.toString()),
+                          );
+                        },
+                      ),
                     ),
                     if (gpsMapSearch && location != null && location is! String)
                       MarkerLayer(

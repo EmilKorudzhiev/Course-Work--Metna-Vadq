@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.comment;
 
+import dev.emilkorudzhiev.coursework.entities.comment.requests.CommentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

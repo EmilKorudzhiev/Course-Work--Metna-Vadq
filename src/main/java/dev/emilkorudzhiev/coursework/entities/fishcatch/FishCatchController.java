@@ -1,6 +1,8 @@
 package dev.emilkorudzhiev.coursework.entities.fishcatch;
 
 
+import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.FishCatchRequest;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.SearchRadiusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class FishCatchController {
     //GET CATCHES WITHOUT RECOMMENDATION ALGORITHM (ONLY FOR TESTING PURPOSES)
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
-    public ResponseEntity<? extends List<?>> getFishCatches(
+    public ResponseEntity<List<FullFishCatchDto>> getFishCatches(
             @RequestParam(name = "page-size", defaultValue = "20", required = false) Integer pageSize,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber
     ) {
@@ -62,8 +64,6 @@ public class FishCatchController {
         return fishCatch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // TODO : make it better for map showcase
-    // TODO : make date search too
     @GetMapping("find-in-radius")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<MarkerFishCatchDto>> getFishCatchMarkersInRadius(
@@ -97,5 +97,6 @@ public class FishCatchController {
                 ResponseEntity.noContent().build() :
                 ResponseEntity.notFound().build();
     }
+
 
 }

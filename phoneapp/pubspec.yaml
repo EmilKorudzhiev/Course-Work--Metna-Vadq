@@ -23,7 +23,7 @@ dependencies:
   equatable: ^2.0.5
   loadmore: ^2.1.0
   flutter_map: ^6.1.0
-  flutter_map_marker_cluster: ^1.3.4
+  flutter_map_marker_cluster: ^1.3.5
   latlong2: ^0.9.0
   geolocator: ^11.0.0
   font_awesome_flutter: ^10.7.0

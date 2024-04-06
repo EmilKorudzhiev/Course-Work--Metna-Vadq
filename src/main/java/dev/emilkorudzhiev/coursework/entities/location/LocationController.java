@@ -1,29 +1,55 @@
 package dev.emilkorudzhiev.coursework.entities.location;
 
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatchController;
+import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.SearchRadiusRequest;
+import dev.emilkorudzhiev.coursework.entities.location.requests.LocationRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "api/v1/locations")
 @RequiredArgsConstructor
+@RequestMapping(path = "api/v1/location")
 @PreAuthorize("hasAnyRole('ADMIN','USER')")
 public class LocationController {
 
-    private FishCatchController locationService;
+    private final LocationService locationService;
 
-//    @PostMapping
-//    @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
-//    public ResponseEntity<Void> postLocation(
-//            @RequestBody LocationRequest request
-//    ) {
-//        locationService.postLocation(request);
-//        return ResponseEntity.noContent().build();
-//    }
+    //GET CATCHES WITHOUT RECOMMENDATION ALGORITHM (ONLY FOR TESTING PURPOSES)
+    @GetMapping()
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<FullLocationDto>> getLocations(
+            @RequestParam(name = "page-size", defaultValue = "20", required = false) Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber
+    ) {
+        Optional<List<FullLocationDto>> list = locationService.getLocations(pageSize, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("find-in-radius")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<MarkerLocationDto>> getLocationsInRadius(
+            @RequestBody SearchRadiusRequest request
+    ) {
+        Optional<List<MarkerLocationDto>> list = locationService.getLocationsInRadius(request);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
+    public ResponseEntity<Void> postLocation(
+            @RequestPart LocationRequest request,
+            @RequestPart MultipartFile image
+    ) {
+        locationService.postLocation(request, image);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package dev.emilkorudzhiev.coursework.entities.comment;
 
+import dev.emilkorudzhiev.coursework.entities.comment.requests.CommentRequest;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatchRepository;
 import dev.emilkorudzhiev.coursework.entities.user.User;

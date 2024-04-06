@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.auth;
+package dev.emilkorudzhiev.coursework.auth.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.emilkorudzhiev.coursework.enums.Role;

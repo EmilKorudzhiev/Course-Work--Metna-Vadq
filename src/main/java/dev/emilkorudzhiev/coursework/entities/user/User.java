@@ -1,6 +1,7 @@
 package dev.emilkorudzhiev.coursework.entities.user;
 
 import dev.emilkorudzhiev.coursework.entities.comment.Comment;
+import dev.emilkorudzhiev.coursework.entities.location.Location;
 import dev.emilkorudzhiev.coursework.enums.Role;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import jakarta.persistence.*;
@@ -96,8 +97,12 @@ public class User implements UserDetails {
     )
     private List<Comment> comments;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade=CascadeType.ALL
+    )
+    private List<Location> locations;
 
-    //somehow id is duplicate answer is in web history
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "fish_catch_likes",

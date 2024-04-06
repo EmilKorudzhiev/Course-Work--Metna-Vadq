@@ -1,4 +1,4 @@
-package dev.emilkorudzhiev.coursework.entities.fishcatch;
+package dev.emilkorudzhiev.coursework.entities.fishcatch.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
