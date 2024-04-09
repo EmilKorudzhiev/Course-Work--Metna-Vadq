@@ -23,10 +23,10 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     ref.read(authProvider).isLoggedIn().then((value) => {
-          Future.delayed(Duration(seconds: 2), () async {
+          Future.delayed(const Duration(seconds: 2), () async {
             if (value) {
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => NavigationBarWidget()));
+                  MaterialPageRoute(builder: (_) => const NavigationBarWidget()));
             } else {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (_) => const LoginPage()));

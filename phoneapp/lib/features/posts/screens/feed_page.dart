@@ -13,9 +13,7 @@ class FeedPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     List<FullPostModel> postList = [];
 
-    return SafeArea(
-          minimum: const EdgeInsets.only(top: 16),
-          child: Scaffold(
+    return Scaffold(
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 title: const Text('Metna-vadq'),
@@ -53,7 +51,7 @@ class FeedPage extends ConsumerWidget {
                     ),
                   ),
                 ],
-              )),
+              ),
         );
   }
 

@@ -1,3 +1,4 @@
+import 'package:MetnaVadq/features/search/data/location_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/search_suggestion_model.dart';
 import 'package:MetnaVadq/features/search/service/map_search_repository.dart';
@@ -33,11 +34,20 @@ class MapboxController {
     return LatLng(coordinates[1] as double, coordinates[0] as double);
   }
 
-  Future<List<PostMarkerModel>> getSearchedPlaceResult(LatLng coordinate, int radius) async {
-    final response = await _mapboxRepository.getSearchedPlaceResult(coordinate, radius);
+  Future<List<PostMarkerModel>> getSearchedPostsResult(LatLng coordinate, int radius) async {
+    final response = await _mapboxRepository.getSearchedPostsResult(coordinate, radius);
     final posts = (response?.data as List)
         .map((e) => PostMarkerModel.fromJson(e as Map<String, dynamic>))
         .toList();
     return posts;
   }
+
+  Future<List<LocationMarkerModel>> getSearchedLocationsResult(LatLng coordinate, int radius) async {
+    final response = await _mapboxRepository.getSearchedLocationsResult(coordinate, radius);
+    final locations = (response?.data as List)
+        .map((e) => LocationMarkerModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return locations;
+  }
+
 }

@@ -1,8 +1,12 @@
+import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
+import 'package:MetnaVadq/features/posts/screens/individual_post_page.dart';
+import 'package:MetnaVadq/features/search/data/location_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/search_suggestion_model.dart';
 import 'package:MetnaVadq/features/search/service/location_controller.dart';
 import 'package:MetnaVadq/features/search/service/map_search_controller.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -21,9 +25,13 @@ final searchedLocationProvider = StateProvider<LatLng?>((ref) {
 });
 
 //Search results
-//TODO make one for fish catches and one for locations
-final searchedLocationNearbyResultCoordinatesProvider =
+final searchedFishCatchesNearbyResultCoordinatesProvider =
     StateProvider<List<PostMarkerModel>>((ref) {
+  return [];
+});
+
+final searchedLocationsNearbyResultCoordinatesProvider =
+    StateProvider<List<LocationMarkerModel>>((ref) {
   return [];
 });
 
@@ -65,8 +73,10 @@ class MapSearchPage extends ConsumerWidget {
     print(locationMapSearch);
 
     //Markers
-    final markerResults =
-        ref.watch(searchedLocationNearbyResultCoordinatesProvider);
+    final fishCatchMarkerResults =
+        ref.watch(searchedFishCatchesNearbyResultCoordinatesProvider);
+    final locationMarkerResults =
+        ref.watch(searchedLocationsNearbyResultCoordinatesProvider);
 
     //GPS location
     var locationProvider = ref.watch(positionProvider);
@@ -110,8 +120,6 @@ class MapSearchPage extends ConsumerWidget {
                 ],
               ),
 
-              //TODO make it for fish catches and locations
-              //TODO make displaying fish catches blue locations some other color
               //TODO make them button that take them to their page
               Builder(builder: (context) {
                 if (gpsMapSearch) {
@@ -124,7 +132,12 @@ class MapSearchPage extends ConsumerWidget {
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        return const SizedBox.shrink();
+                        if (location is String) {
+                          return Text(location);
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                        return Text(location);
                       }
                     }),
                   );
@@ -187,12 +200,23 @@ class MapSearchPage extends ConsumerWidget {
 
                                         ref
                                                 .watch(
-                                                    searchedLocationNearbyResultCoordinatesProvider
+                                                    searchedFishCatchesNearbyResultCoordinatesProvider
                                                         .notifier)
                                                 .state =
                                             await ref
                                                 .read(mapboxControllerProvider)
-                                                .getSearchedPlaceResult(
+                                                .getSearchedPostsResult(
+                                                    searchedLocationResult,
+                                                    selectedRadius);
+
+                                        ref
+                                                .watch(
+                                                    searchedLocationsNearbyResultCoordinatesProvider
+                                                        .notifier)
+                                                .state =
+                                            await ref
+                                                .read(mapboxControllerProvider)
+                                                .getSearchedLocationsResult(
                                                     searchedLocationResult,
                                                     selectedRadius);
                                       },
@@ -258,23 +282,35 @@ class MapSearchPage extends ConsumerWidget {
                           //TODO a shared provider with search markers when changing between search modes make the provider null so when the gps is enabled and the provider is null it searches for locations immediately
                           ElevatedButton(
                             onPressed: () async {
+
+                              mapController.move(
+                                  LatLng(location.latitude, location.longitude),
+                                  12.5);
+
                               ref
                                       .watch(
-                                          searchedLocationNearbyResultCoordinatesProvider
+                                          searchedFishCatchesNearbyResultCoordinatesProvider
                                               .notifier)
                                       .state =
                                   await ref
                                       .read(mapboxControllerProvider)
-                                      .getSearchedPlaceResult(
+                                      .getSearchedPostsResult(
                                           LatLng(location.latitude,
                                               location.longitude),
                                           selectedRadius);
-                              mapController.move(
-                                  LatLng(location.latitude, location.longitude),
-                                  12.5);
-                              ref
-                                      .read(searchedLocationProvider.notifier)
-                                      .state =
+
+                              ref.watch(
+                                  searchedLocationsNearbyResultCoordinatesProvider
+                                      .notifier).state =
+                                  await ref
+                                      .read(mapboxControllerProvider)
+                                      .getSearchedLocationsResult(
+                                          LatLng(location.latitude,
+                                              location.longitude),
+                                          selectedRadius);
+
+                              ref.read(searchedLocationProvider.notifier)
+                                  .state =
                                   LatLng(location.latitude, location.longitude);
                             },
                             child: const Text('Поднови'),
@@ -332,42 +368,118 @@ class MapSearchPage extends ConsumerWidget {
                           'tiles/256/{z}/{x}/{y}@2x?'
                           'access_token=pk.eyJ1IjoiZW1rb2V4ZSIsImEiOiJjbHRsbnowZWYxODhmMnBxdnptZTU4ZDE3In0.Xc_w_0i9kPbpEG8DA42CYg',
                     ),
-                    MarkerClusterLayerWidget(
-                      options: MarkerClusterLayerOptions(
-                        maxClusterRadius: 120,
-                        size: const Size(45, 45),
-                        markers: markerResults
-                            .map((element) => Marker(
-                                  point: LatLng(
-                                      element.latitude, element.longitude),
-                                  width: 50,
-                                  height: 50,
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.location_pin,
-                                      size: 30,
+                    if (locationMapSearch)
+                      MarkerClusterLayerWidget(
+                        options: MarkerClusterLayerOptions(
+                          maxClusterRadius: 120,
+                          size: const Size(45, 45),
+                          markers: locationMarkerResults
+                              .map((element) => Marker(
+                                    point: LatLng(
+                                        element.latitude, element.longitude),
+                                    width: 50,
+                                    height: 50,
+                                    child: IconButton(
+                                      icon: Builder(
+                                        builder: (context) {
+                                          if (element.type.toLowerCase() ==
+                                              "store") {
+                                            return const Icon(
+                                              Icons.store,
+                                              color: Colors.orange,
+                                              size: 30,
+                                            );
+                                          } else if (element.type
+                                                  .toLowerCase() ==
+                                              "fishing_place") {
+                                            return const Icon(
+                                              FontAwesomeIcons.water,
+                                              color: AppColors.primary,
+                                              size: 30,
+                                            );
+                                          } else if (element.type
+                                                  .toLowerCase() ==
+                                              "event") {
+                                            return const Icon(
+                                              Icons.event,
+                                              color: Colors.teal,
+                                              size: 30,
+                                            );
+                                          } else {
+                                            return const Icon(
+                                              Icons.location_pin,
+                                              size: 30,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      onPressed: () {
+                                        //TODO take to the location post page
+                                        print(
+                                            "Working location ID: ${element.id}" +
+                                                locationMarkerResults.length
+                                                    .toString());
+                                      },
                                     ),
-                                    onPressed: () {
-                                      //TODO take to the fish catch post page
-                                      print("Working${element.id}" +
-                                          markerResults.length.toString());
-                                    },
-                                  ),
-                                ))
-                            .toList(),
-                        polygonOptions: const PolygonOptions(
-                            borderColor: Colors.blueAccent,
-                            color: Colors.black54,
-                            borderStrokeWidth: 3),
-                        builder: (context, markers) {
-                          return FloatingActionButton(
-                            onPressed: null,
-                            backgroundColor: Colors.blue,
-                            child: Text(markers.length.toString()),
-                          );
-                        },
+                                  ))
+                              .toList(),
+                          polygonOptions: const PolygonOptions(
+                              borderColor: Colors.blueAccent,
+                              color: Colors.black54,
+                              borderStrokeWidth: 3),
+                          builder: (context, markers) {
+                            return FloatingActionButton(
+                              onPressed: null,
+                              backgroundColor: Colors.blue,
+                              child: Text(markers.length.toString()),
+                            );
+                          },
+                        ),
                       ),
-                    ),
+                    if (!locationMapSearch)
+                      MarkerClusterLayerWidget(
+                        options: MarkerClusterLayerOptions(
+                          maxClusterRadius: 120,
+                          size: const Size(45, 45),
+                          markers: fishCatchMarkerResults
+                              .map((element) => Marker(
+                                    point: LatLng(
+                                        element.latitude, element.longitude),
+                                    width: 50,
+                                    height: 50,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.fishFins,
+                                        color: AppColors.primary,
+                                        size: 30,
+                                      ),
+                                      onPressed: () {
+                                        //TODO take to the fish catch post page
+                                        print("Working post ID: ${element.id}${fishCatchMarkerResults.length}");
+                                        Navigator.of(context, rootNavigator:true).push( // ensures fullscreen
+                                            CupertinoPageRoute(
+                                                builder: (BuildContext context) {
+                                                  return IndividualPostPage(element.id);
+                                                }
+                                            ) );
+
+                                      },
+                                    ),
+                                  ))
+                              .toList(),
+                          polygonOptions: const PolygonOptions(
+                              borderColor: Colors.blueAccent,
+                              color: Colors.black54,
+                              borderStrokeWidth: 3),
+                          builder: (context, markers) {
+                            return FloatingActionButton(
+                              onPressed: null,
+                              backgroundColor: Colors.blue,
+                              child: Text(markers.length.toString()),
+                            );
+                          },
+                        ),
+                      ),
                     if (gpsMapSearch && location != null && location is! String)
                       MarkerLayer(
                         markers: [

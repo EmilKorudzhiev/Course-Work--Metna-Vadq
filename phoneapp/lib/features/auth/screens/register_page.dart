@@ -21,21 +21,23 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     mediaSize = MediaQuery.of(context).size;
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        image: DecorationImage(
-          image: AssetImage("lib/assets/pictures/registerPic.jpg"),
-          fit: BoxFit.cover,
-          colorFilter:
-          ColorFilter.mode(AppColors.primaryAccent, BlendMode.dstATop),
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          image: DecorationImage(
+            image: AssetImage("lib/assets/pictures/registerPic.jpg"),
+            fit: BoxFit.cover,
+            colorFilter:
+            ColorFilter.mode(AppColors.primaryAccent, BlendMode.dstATop),
+          ),
         ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(children: [
-          Positioned(bottom: 0, child: _buildBottom()),
-        ]),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Stack(children: [
+            Positioned(bottom: 0, child: _buildBottom()),
+          ]),
+        ),
       ),
     );
   }

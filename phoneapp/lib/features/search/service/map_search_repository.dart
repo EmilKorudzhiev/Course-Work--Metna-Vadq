@@ -65,7 +65,8 @@ class MapboxRepository {
     return null;
   }
 
-  Future<Response?> getSearchedPlaceResult(LatLng coordinates, int radius) async {
+  Future<Response?> getSearchedPostsResult(
+      LatLng coordinates, int radius) async {
     try {
       final response = await _api.dio.get(
         Endpoints.GET_POSTS_BY_RADIUS_ENDPOINT,
@@ -75,6 +76,30 @@ class MapboxRepository {
         data: {
           "latitude": coordinates.latitude,
           "longitude": coordinates.longitude,
+          "distance": radius,
+        },
+      );
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
+
+  Future<Response?> getSearchedLocationsResult(
+      LatLng coordinate, int radius) async {
+    try {
+      final response = _api.dio.get(
+        Endpoints.GET_LOCATIONS_BY_RADIUS_ENDPOINT,
+        options: Options(headers: {
+          "Authorization": "Bearer ${await _storage.getAccessToken()}"
+        }),
+        data: {
+          "latitude": coordinate.latitude,
+          "longitude": coordinate.longitude,
           "distance": radius,
         },
       );

@@ -50,7 +50,12 @@ class LocationController {
         'Location permissions are permanently denied, we cannot request permissions.',
       );
     }
+    try {
+      return await Geolocator.getCurrentPosition();
+    } catch (e) {
+      print(e);
+      throw e;
+    }
 
-    return await Geolocator.getCurrentPosition();
   }
 }
