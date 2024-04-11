@@ -454,8 +454,6 @@ class MapSearchPage extends ConsumerWidget {
                                         size: 30,
                                       ),
                                       onPressed: () {
-                                        //TODO take to the fish catch post page
-                                        print("Working post ID: ${element.id}${fishCatchMarkerResults.length}");
                                         Navigator.of(context, rootNavigator:true).push( // ensures fullscreen
                                             CupertinoPageRoute(
                                                 builder: (BuildContext context) {

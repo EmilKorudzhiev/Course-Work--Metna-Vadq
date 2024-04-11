@@ -1,13 +1,13 @@
 
-class PartialUser {
+class PartialUserModel {
   final int id;
   final String firstName;
   final String lastName;
   final String? profilePictureUrl;
 
-  PartialUser({required this.id, required this.firstName, required this.lastName, this.profilePictureUrl});
+  PartialUserModel({required this.id, required this.firstName, required this.lastName, this.profilePictureUrl});
 
-  PartialUser.fromJson(Map<String, dynamic> json)
+  PartialUserModel.fromJson(Map<String, dynamic> json)
       : id = json['id'] as int,
         firstName = json['firstName'] as String,
         lastName = json['lastName'] as String,

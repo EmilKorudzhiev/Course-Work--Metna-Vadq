@@ -81,7 +81,7 @@ class PostCard extends StatelessWidget {
             child: Row(
               children: [
                 AppWidgets.buildCircularProfilePicture(
-                    "${AWS.POST_IMAGE_URL}${post.id}/${post.imageUrl}", 40),
+                    "${AWS.USER_IMAGE_URL}${post.user.id}/${post.user.profilePictureUrl}", 40),
                 Expanded(
                   child: ListTile(
                     title: Text(

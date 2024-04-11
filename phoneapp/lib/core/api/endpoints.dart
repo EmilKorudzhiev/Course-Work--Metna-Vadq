@@ -16,7 +16,11 @@ class Endpoints {
 
   //Fish catches
   static const GET_POSTS_PAGEABLE_ENDPOINT = '$URL/fish-catch';
+  static const GET_POST_ENDPOINT = '$URL/fish-catch';
   static const GET_POSTS_BY_RADIUS_ENDPOINT = '$URL/fish-catch/find-in-radius';
+
+  //Fish catches comments
+  static const GET_COMMENTS_PAGEABLE_ENDPOINT = '$URL/comment';
 
   //Locations
   static const GET_LOCATIONS_PAGEABLE_ENDPOINT = '$URL/location';

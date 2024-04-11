@@ -20,7 +20,7 @@ public class FullFishCatchDto {
     private String text;
     private UUID fishCatchImage;
     private PartialUserDto user;
-    private List<CommentDto> comments;
+    private boolean isLiked;
 
     public FullFishCatchDto(FishCatch fishCatch) {
         this.id = fishCatch.getId();
@@ -30,7 +30,6 @@ public class FullFishCatchDto {
         this.text = fishCatch.getText();
         this.fishCatchImage = fishCatch.getFishCatchImage();
         this.user = new PartialUserDto(fishCatch.getUser());
-        this.comments = fishCatch.getComments().stream().map(CommentDto::new).toList();
     }
 
 }

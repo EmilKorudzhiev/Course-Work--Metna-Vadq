@@ -44,14 +44,24 @@ public class FishCatchService {
     ) {
         return fishCatchRepository
                 .findFishCatchPageable(PageRequest.of(pageNumber, pageSize))
-                .map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
+                .map(catches -> catches.stream().map(
+                        fishCatch -> {
+                            FullFishCatchDto dto = new FullFishCatchDto(fishCatch);
+                            dto.setLiked(fishCatch.getLikes().stream().anyMatch(user -> user.getId().equals(userService.getCurrentUserId())));
+                            return dto;
+                        }).toList());
     }
 
 
     public Optional<List<FullFishCatchDto>> getFishCatchesFeed(Integer pageSize, Integer pageNumber) {
         return fishCatchRepository
                 .findFishCatchPageableFeed(PageRequest.of(pageNumber, pageSize))
-                .map(catches -> catches.stream().map(FullFishCatchDto::new).toList());
+                .map(catches -> catches.stream().map(
+                        fishCatch -> {
+                            FullFishCatchDto dto = new FullFishCatchDto(fishCatch);
+                            dto.setLiked(fishCatch.getLikes().stream().anyMatch(user -> user.getId().equals(userService.getCurrentUserId())));
+                            return dto;
+                        }).toList());
     }
 
     public Optional<List<PartialFishCatchDto>> getUserFishCatches(
@@ -66,7 +76,11 @@ public class FishCatchService {
     }
 
     public Optional<FullFishCatchDto> getFishCatchById(Long fishCatchId) {
-        return fishCatchRepository.findById(fishCatchId).map(FullFishCatchDto::new);
+        return fishCatchRepository.findById(fishCatchId).map(fishCatch -> {
+                    FullFishCatchDto dto = new FullFishCatchDto(fishCatch);
+                    dto.setLiked(fishCatch.getLikes().stream().anyMatch(user -> user.getId().equals(userService.getCurrentUserId())));
+                    return dto;
+                });
     }
 
     // TODO : make date search too

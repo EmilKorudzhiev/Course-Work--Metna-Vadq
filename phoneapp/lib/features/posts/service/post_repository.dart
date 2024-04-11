@@ -40,4 +40,44 @@ class PostRepository {
     return null;
   }
 
+  Future<Response?> getPost(int postId) async {
+    try {
+      final response = await _api.dio.get("${Endpoints.GET_POST_ENDPOINT}/$postId",
+          options: Options(headers: {
+            "Authorization": "Bearer ${await _storage.getAccessToken()}"
+          }));
+
+      print(response);
+
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e){
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
+
+  Future<Response?> getComments(int postId, int pageNum, int pageSize) async {
+    try {
+      pageSize ??= 20;
+      final response = await _api.dio.get("${Endpoints.GET_COMMENTS_PAGEABLE_ENDPOINT}?page-size=$pageSize&page=$pageNum&post-id=$postId",
+          options: Options(headers: {
+            "Authorization": "Bearer ${await _storage.getAccessToken()}"
+          })
+      );
+
+      print(response);
+
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e){
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
+
 }

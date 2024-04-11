@@ -7,7 +7,7 @@ class FullPostModel {
   final double longitude;
   final String description;
   final String imageUrl;
-  final PartialUser user;
+  final PartialUserModel user;
 
   FullPostModel(this.id, this.date, this.latitude, this.longitude, this.description, this.imageUrl, this.user);
 
@@ -18,7 +18,7 @@ class FullPostModel {
     longitude = json['longitude'] as double,
     description = json['text'] as String,
     imageUrl = json['fishCatchImage'] as String,
-    user = PartialUser.fromJson(json['user']);
+    user = PartialUserModel.fromJson(json['user']);
 
   Map<String, dynamic> toJson() => {
     'id': id,

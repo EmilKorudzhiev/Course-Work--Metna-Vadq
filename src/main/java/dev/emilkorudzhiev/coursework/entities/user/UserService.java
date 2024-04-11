@@ -134,20 +134,19 @@ public class UserService {
         User user = getCurrentUser().get();
         Optional<FishCatch> fishCatch = fishCatchRepository.findById(fishCatchId);
 
-        if(user.getLikedFishCatches()
-                .stream()
-                .anyMatch(fc -> fc.getId().equals(fishCatchId))) {
-            throw new RuntimeException("Post already liked");
+        if (fishCatch.isEmpty()) {
+            throw new RuntimeException("Fish catch not found.");
+        }
+
+        if (user.getLikedFishCatches().contains(fishCatch.get())) {
+            user.getLikedFishCatches().remove(fishCatch.get());
+            userRepository.save(user);
+            return;
         }
 
         user.getLikedFishCatches().add(fishCatch.get());
         userRepository.save(user);
     }
-
-
-
-
-
 
 
 
