@@ -80,4 +80,48 @@ class PostRepository {
     return null;
   }
 
+  Future<Response?> likePost(int postId) async {
+    try {
+      final response = await _api.dio.put("${Endpoints.LIKE_POST_ENDPOINT}/$postId",
+          options: Options(headers: {
+            "Authorization": "Bearer ${await _storage.getAccessToken()}"
+          })
+      );
+
+      print(response);
+
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e){
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
+
+  Future<Response?> addComment(int postId, String comment) async {
+    try {
+      final response = await _api.dio.post(Endpoints.GET_COMMENTS_PAGEABLE_ENDPOINT,
+          options: Options(headers: {
+            "Authorization": "Bearer ${await _storage.getAccessToken()}"
+          }),
+          data: {
+            "fish-catch-id": postId,
+            "text": comment
+          }
+      );
+
+      print(response);
+
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e){
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+  }
+
 }

@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Long> {
 
-    @Query("SELECT c FROM Comment c WHERE c.fishCatch.id = :postId")
+    @Query("SELECT c FROM Comment c WHERE c.fishCatch.id = :postId ORDER BY c.date DESC")
     Optional<List<Comment>> findCommentsByFishCatchId(Long postId, Pageable pageable);
 }

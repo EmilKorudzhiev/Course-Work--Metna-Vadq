@@ -14,45 +14,45 @@ class FeedPage extends ConsumerWidget {
     List<FullPostModel> postList = [];
 
     return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                title: const Text('Metna-vadq'),
-                centerTitle: true,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Metna-vadq'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Container(
+            child: ElevatedButton(
+              onPressed: () async {
+                ref.read(authProvider.notifier).signOut();
+              },
+              child: const Text("Logout"),
+            ),
+          ),
+          // TODO make it infinity scrollable and pull to refresh
+          Container(
+            child: Expanded(
+              child: FutureBuilder(
+                future: ref.watch(postControllerProvider).getPosts(0, 20),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  var posts = snapshot.data!;
+                  return ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        return PostCard(post: posts[index]);
+                      });
+                },
               ),
-              body: Column(
-                children: [
-                  Container(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        ref.read(authProvider.notifier).signOut();
-                      },
-                      child: const Text("Logout"),
-                    ),
-                  ),
-                  // TODO make it infinity scrollable and pull to refresh
-                  Container(
-                    child: Expanded(
-                      child: FutureBuilder(
-                        future: ref.watch(postControllerProvider).getPosts(0, 20),
-                        builder: (context, snapshot) {
-                          if (snapshot.data == null) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          var posts = snapshot.data!;
-                          return ListView.builder(
-                              itemCount: posts.length,
-                              itemBuilder: (context, index) {
-                                return PostCard(post: posts[index]);
-                              });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-        );
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _refresh() async {
@@ -80,8 +80,12 @@ class PostCard extends StatelessWidget {
             padding: EdgeInsets.only(top: 4.0, left: 10.0),
             child: Row(
               children: [
-                AppWidgets.buildCircularProfilePicture(
-                    "${AWS.USER_IMAGE_URL}${post.user.id}/${post.user.profilePictureUrl}", 40),
+                if (post.user.profilePictureUrl == null)
+                  AppWidgets.buildCircularProfilePicture("", 40)
+                else
+                  AppWidgets.buildCircularProfilePicture(
+                      "${AWS.USER_IMAGE_URL}${post.user.id}/${post.user.profilePictureUrl}",
+                      40),
                 Expanded(
                   child: ListTile(
                     title: Text(

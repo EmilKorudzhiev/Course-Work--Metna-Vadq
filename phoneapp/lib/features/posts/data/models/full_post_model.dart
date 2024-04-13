@@ -7,18 +7,20 @@ class FullPostModel {
   final double longitude;
   final String description;
   final String imageUrl;
+  final bool isLiked;
   final PartialUserModel user;
 
-  FullPostModel(this.id, this.date, this.latitude, this.longitude, this.description, this.imageUrl, this.user);
+  FullPostModel(this.id, this.date, this.latitude, this.longitude, this.description, this.imageUrl, this.user, this.isLiked);
 
   FullPostModel.fromJson(Map<String, dynamic> json)
-  : id = json['id'] as int,
-    date = DateTime.parse(json['date']),
-    latitude = json['latitude'] as double,
-    longitude = json['longitude'] as double,
-    description = json['text'] as String,
-    imageUrl = json['fishCatchImage'] as String,
-    user = PartialUserModel.fromJson(json['user']);
+: id = json['id'] as int,
+  date = DateTime.parse(json['date']).toLocal(),
+  latitude = json['latitude'] as double,
+  longitude = json['longitude'] as double,
+  description = json['text'] as String,
+  imageUrl = json['fishCatchImage'] as String,
+  isLiked = json['liked'] as bool,
+  user = PartialUserModel.fromJson(json['user']);
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -29,6 +31,10 @@ class FullPostModel {
     'fishCatchImage' : imageUrl,
     'user' : user.toJson()
   };
+
+  FullPostModel copyWith({required bool isLiked}) {
+    return FullPostModel(id, date, latitude, longitude, description, imageUrl, user, isLiked);
+  }
 
 }
 

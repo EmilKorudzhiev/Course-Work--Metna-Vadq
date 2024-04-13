@@ -1,4 +1,5 @@
 import 'package:MetnaVadq/features/user/data/partial_user_model.dart';
+import 'package:intl/intl.dart';
 
 class CommentModel {
   final int id;
@@ -16,11 +17,14 @@ class CommentModel {
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
+    DateTime utcDateTime = DateTime.parse(json['date']);
+    DateTime localDateTime = utcDateTime.toLocal();
+
     return CommentModel(
       id: json['id'] as int,
       postId: json['fishCatchId'] as int,
       text: json['text'],
-      createdAt: DateTime.parse(json['date']),
+      createdAt: localDateTime,
       user: PartialUserModel.fromJson(json['user']),
     );
   }

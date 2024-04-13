@@ -39,4 +39,22 @@ class PostController {
     return comments;
   }
 
+  Future<bool> likePost(int postId) async {
+    final response = await _postRepository.likePost(postId);
+    if (response?.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> addComment(int postId, String comment) async {
+    final response = await _postRepository.addComment(postId, comment);
+    if (response?.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }

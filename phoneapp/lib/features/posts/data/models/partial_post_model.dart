@@ -9,7 +9,7 @@ class PartialPostModel {
 
   PartialPostModel.fromJson(Map<String, dynamic> json)
   : id = json['id'] as int,
-    date = DateTime.parse(json['date']),
+    date = DateTime.parse(json['date']).toLocal(),
     latitude = json['latitude'] as double,
     longitude = json['longitude'] as double,
     imageUrl = json['fishCatchImage'] as String;

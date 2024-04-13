@@ -39,6 +39,4 @@ public interface FishCatchRepository extends JpaRepository<FishCatch, Long> {
             nativeQuery = true
     )
     Optional<List<FishCatch>> findFishCatchesInRadius(@Param("latitude") Double latitude,@Param("longitude") Double longitude, @Param("distanceMeters") Long distanceMeters);
-
-
 }
