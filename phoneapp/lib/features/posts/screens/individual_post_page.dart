@@ -2,7 +2,6 @@ import 'package:MetnaVadq/core/aws/aws.dart';
 import 'package:MetnaVadq/features/posts/screens/feed_widgets.dart';
 import 'package:MetnaVadq/features/posts/service/comments_notifier.dart';
 import 'package:MetnaVadq/features/posts/service/individual_post_notifier.dart';
-import 'package:MetnaVadq/features/posts/service/post_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -121,7 +120,7 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                             fit: BoxFit.cover,
                             width: double.infinity,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Text(
                             post.description,
                             style: const TextStyle(
@@ -172,7 +171,6 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                                     const Divider(),
                                 itemCount: comments.length + 1,
                                 itemBuilder: (context, index) {
-                                  print(index);
                                   if (index < comments.length - 1) {
                                     var comment = comments[index];
                                     return ListTile(
@@ -252,7 +250,7 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
         bottomSheet: Container(
           color: Colors.white,
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(
@@ -293,7 +291,6 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                 Consumer(
                   builder: (context, ref, child) {
                     final like = ref.watch(individualPostNotifierProvider(postId));
-                    print(like.toString() + " like");
                     return IconButton(
                         icon: like.isLiked ?
                         const Icon(Icons.favorite, color: Colors.red) :
