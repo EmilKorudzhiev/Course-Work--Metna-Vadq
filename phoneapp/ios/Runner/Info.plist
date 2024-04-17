@@ -49,5 +49,7 @@
     <string>Using camera for capturing post pictures.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Using microphone.</string>
+    <key>NSPhotoLibraryUsageDescription </key>
+    <string>Saving photos when creating posts.</string>
 </dict>
 </plist>

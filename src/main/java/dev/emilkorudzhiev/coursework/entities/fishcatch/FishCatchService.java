@@ -95,7 +95,7 @@ public class FishCatchService {
 
         if(image.isEmpty())
             throw new RuntimeException("No file attached.");
-        if(!Set.of("image/png","image/jpeg").contains(image.getContentType()))
+        if(!Set.of("image/png","image/jpeg", "image/jpg").contains(image.getContentType()))
             throw new RuntimeException("File format not supported.");
         if (image.getSize() > maxImageSize)
             throw new RuntimeException("Image size is too large.");

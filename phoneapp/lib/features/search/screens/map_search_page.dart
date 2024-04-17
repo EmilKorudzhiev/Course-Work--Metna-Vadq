@@ -79,7 +79,7 @@ class MapSearchPage extends ConsumerWidget {
         ref.watch(searchedLocationsNearbyResultCoordinatesProvider);
 
     //GPS location
-    var locationProvider = ref.watch(positionProvider);
+    var locationProvider = ref.watch(mapPositionStreamProvider);
     var location;
     if (locationProvider.hasError) {
       if (locationProvider.error is GpsLocationException) {
@@ -97,6 +97,7 @@ class MapSearchPage extends ConsumerWidget {
       child: Scaffold(
           appBar: AppBar(
             title: const Center(child: Text('Карта')),
+            automaticallyImplyLeading: false,
           ),
           body: SizedBox(
             child: Column(
@@ -122,27 +123,23 @@ class MapSearchPage extends ConsumerWidget {
                   ],
                 ),
 
-                //TODO make them button that take them to their page
                 Builder(builder: (context) {
                   if (gpsMapSearch) {
-                    return Container(
-                      child: Builder(builder: (context) {
-                        if (location == null) {
-                          return const SizedBox(
-                            height: 20.0,
-                            width: 20.0,
-                            child: CircularProgressIndicator(),
-                          );
-                        } else {
-                          if (location is String) {
-                            return Text(location);
-                          } else {
-                            return const SizedBox.shrink();
-                          }
+                    return Builder(builder: (context) {
+                      if (location == null) {
+                        return const SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        if (location is String) {
                           return Text(location);
+                        } else {
+                          return const SizedBox.shrink();
                         }
-                      }),
-                    );
+                      }
+                    });
                   } else {
                     return Column(
                       children: [
@@ -463,7 +460,7 @@ class MapSearchPage extends ConsumerWidget {
                                         ),
                                         onPressed: () {
                                           Navigator.of(context, rootNavigator:true).push( // ensures fullscreen
-                                              CupertinoPageRoute(
+                                              MaterialPageRoute(
                                                   builder: (BuildContext context) {
                                                     return IndividualPostPage(element.id);
                                                   }

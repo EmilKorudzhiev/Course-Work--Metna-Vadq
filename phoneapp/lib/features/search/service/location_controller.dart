@@ -8,7 +8,7 @@ final isPositionActiveProvider = StateProvider<bool>((ref) {
   return false;
 });
 
-final positionProvider = StreamProvider.autoDispose<Position?>((ref) {
+final mapPositionStreamProvider = StreamProvider.autoDispose<Position?>((ref) {
   if (!ref.watch(isPositionActiveProvider)) {
     return const Stream.empty();
   } else {
@@ -19,6 +19,15 @@ final positionProvider = StreamProvider.autoDispose<Position?>((ref) {
       return await event;
     });
   }
+});
+
+final positionStreamProvider = StreamProvider.autoDispose<Position?>((ref) {
+  final locationController = ref.watch(locationControllerProvider);
+  return Stream.periodic(const Duration(seconds: 1), (i) {
+    return locationController.getCurrentPosition();
+  }).asyncMap((event) async {
+    return await event;
+  });
 });
 
 final locationControllerProvider = Provider((ref) {
@@ -34,20 +43,20 @@ class LocationController {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw GpsLocationException('Location services are disabled.');
+      throw GpsLocationException('GPS локацията не е включена!');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        throw GpsLocationException('Location permissions are denied');
+        throw GpsLocationException('Не е разрешено приложението да използва локацията.');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       throw GpsLocationException(
-        'Location permissions are permanently denied, we cannot request permissions.',
+        'Не е разрешено приложението да използва локацията. Моля разрешете достъпа от настройките на устройството.',
       );
     }
     try {
@@ -56,6 +65,5 @@ class LocationController {
       print(e);
       throw e;
     }
-
   }
 }

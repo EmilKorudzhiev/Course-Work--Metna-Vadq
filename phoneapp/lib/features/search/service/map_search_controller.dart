@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:MetnaVadq/features/search/data/location_marker_model.dart';
+import 'package:MetnaVadq/features/search/data/make_post_request_model.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/search_suggestion_model.dart';
 import 'package:MetnaVadq/features/search/service/map_search_repository.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -48,6 +52,12 @@ class MapboxController {
         .map((e) => LocationMarkerModel.fromJson(e as Map<String, dynamic>))
         .toList();
     return locations;
+  }
+
+  Future<bool> makePostRequest(File image, String description, LatLng coordinates) async {
+    MakePostRequestModel request = MakePostRequestModel(description: description, latitude: coordinates.latitude, longitude: coordinates.longitude);
+    final response = await _mapboxRepository.makePostRequest(image, request);
+    return response?.statusCode == 200;
   }
 
 }

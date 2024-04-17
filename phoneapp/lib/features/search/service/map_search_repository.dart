@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:MetnaVadq/core/api/dio/api.dart';
 import 'package:MetnaVadq/core/api/endpoints.dart';
 import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
-import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
+import 'package:MetnaVadq/features/search/data/make_post_request_model.dart';
+import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:uuid/uuid.dart';
+
 
 final mapboxRepositoryProvider = Provider<MapboxRepository>((ref) {
   final api = ref.read(apiProvider);
@@ -112,4 +119,38 @@ class MapboxRepository {
     }
     return null;
   }
+
+  Future<Response?> makePostRequest(File image, MakePostRequestModel request) async {
+    try {
+      String imageName = image.path.split('/').last;
+      final data = FormData.fromMap({
+        "image": await MultipartFile.fromFile(
+          image.path,
+          filename: imageName,
+        ),
+        "request": MultipartFile.fromString(
+          request.toJson(),
+          contentType: MediaType.parse('application/json'),
+        ),
+      },
+      );
+      final response = await _api.dio.post(
+        Endpoints.ADD_POST_ENDPOINT,
+        options: Options(headers: {
+          "Authorization": "Bearer ${await _storage.getAccessToken()}",
+          'Content-Type': 'multipart/form-data',
+          },
+        ),
+        data: data,
+      );
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      print("ERROR!!!!!!");
+      print(e);
+    }
+    return null;
+
+}
 }
