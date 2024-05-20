@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +23,7 @@ public class FullLocationDto {
     private UUID locationImageId;
     private boolean approved;
     private PartialUserDto user;
+    private Timestamp date;
 
     public FullLocationDto(Location location) {
         this.id = location.getId();
@@ -32,5 +34,6 @@ public class FullLocationDto {
         this.locationImageId = location.getLocationImageId();
         this.approved = location.isApproved();
         this.user = new PartialUserDto(location.getUser());
+        this.date = location.getDate();
     }
 }

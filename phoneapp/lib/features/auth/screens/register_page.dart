@@ -1,17 +1,22 @@
+
+import 'package:MetnaVadq/features/auth/models/register_request.dart';
 import 'package:MetnaVadq/features/auth/screens/login_page.dart';
+import 'package:MetnaVadq/features/auth/service/auth_controller.dart';
+import 'package:MetnaVadq/features/navigation_bar/widgets/navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/features/auth/screens/auth_widgets.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   late Size mediaSize;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -92,11 +97,76 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _buildRegisterButton() {
     return ElevatedButton(
       onPressed: () {
-        /// TODO da
-        debugPrint("FName : ${firstNameController.text}");
-        debugPrint("LName : ${lastNameController.text}");
-        debugPrint("Email : ${emailController.text}");
-        debugPrint("Password : ${passwordController.text}");
+        if (firstNameController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Моля въведете име.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (firstNameController.text.length < 3) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Името трябва да бъде поне 3 символа.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (lastNameController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Моля въведете фамилия.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (lastNameController.text.length < 3) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Фамилията трябва да бъде поне 3 символа.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (emailController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Моля въведете имейл.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (passwordController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Моля въведете парола.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (passwordController.text.length < 8) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Паролата трябва да бъде поне 8 символа.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ref
+              .read(authProvider.notifier)
+              .register(RegisterRequest(
+              firstNameController.text,
+              lastNameController.text,
+              emailController.text,
+              passwordController.text))
+              .then((value) => {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Регистрацията е успешна!'),
+                duration: Duration(seconds: 2),
+              ),
+            ),
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NavigationBarWidget()))
+          });
+        }
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
@@ -117,7 +187,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Вече имате регистрация? "),
+        const Text("Вече имате регистрация? "),
         GestureDetector(
           onTap: () {
             Navigator.push(

@@ -22,7 +22,6 @@ public class FishCatchController {
 
     private final FishCatchService fishCatchService;
 
-    //GET CATCHES WITHOUT RECOMMENDATION ALGORITHM (ONLY FOR TESTING PURPOSES)
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<FullFishCatchDto>> getFishCatches(
@@ -72,10 +71,6 @@ public class FishCatchController {
         Optional<List<MarkerFishCatchDto>> list = fishCatchService.getFishCatchMarkersInRadius(request);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-
-    // TODO : get posts for feed with pagination
-
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")

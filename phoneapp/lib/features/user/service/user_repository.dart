@@ -3,6 +3,7 @@ import 'package:MetnaVadq/core/api/endpoints.dart';
 import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http_parser/http_parser.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final api = ref.read(apiProvider);
@@ -14,7 +15,8 @@ class UserRepository {
   final DioClient _api;
   final SecureStorageManager _storage;
 
-  UserRepository({required DioClient api, required SecureStorageManager storage})
+  UserRepository(
+      {required DioClient api, required SecureStorageManager storage})
       : _api = api,
         _storage = storage;
 
@@ -74,6 +76,47 @@ class UserRepository {
     }
 
     return null;
+  }
+
+  Future<Response?> followUser(int id) async {
+    try {
+      final response = _api.dio.put(
+        "${Endpoints.FOLLOW_USER_ENDPOINT}/$id",
+        options: Options(
+            headers: {"Authorization": "Bearer ${await _storage.getAccessToken()}"}),
+      );
+      return response;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<Response?> updateProfilePicture(String path) async{
+    try {
+      final formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(
+          path,
+          contentType: MediaType.parse('image/jpeg'),
+        ),
+      });
+
+      final response = await _api.dio.post(
+        Endpoints.UPDATE_PROFILE_PICTURE_ENDPOINT,
+        data: formData,
+        options: Options(
+            headers: {
+              "Authorization": "Bearer ${await _storage.getAccessToken()}",
+              "Content-Type": "multipart/form-data"
+            }),
+      );
+
+      return response;
+
+    } catch (e) {
+      print(e);
+      throw e;
+    }
   }
 
 }

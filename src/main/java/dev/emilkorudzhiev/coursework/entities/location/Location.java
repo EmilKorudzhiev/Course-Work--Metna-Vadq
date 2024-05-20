@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -71,6 +72,12 @@ public class Location {
             columnDefinition = "boolean default false"
     )
     private boolean approved;
+
+    @Column(
+            name = "date",
+            nullable = false
+    )
+    private Timestamp date;
 
     @ManyToOne
     @JoinColumn(

@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,6 +67,7 @@ public class LocationService {
                     .description(request.getDescription())
                     .locationImageId(imageId)
                     .user(user)
+                    .date(Timestamp.from(Instant.now()))
                     .build();
             Long locationId = locationRepository.save(location).getId();
             s3Service.putObject(
@@ -78,4 +81,7 @@ public class LocationService {
 
     }
 
+    public Optional<FullLocationDto> getLocation(Long id) {
+        return locationRepository.findById(id).map(FullLocationDto::new);
+    }
 }

@@ -87,19 +87,22 @@ public class User implements UserDetails {
 
     @OneToMany(
             mappedBy = "user",
-            cascade=CascadeType.ALL
+            cascade=CascadeType.ALL,
+            orphanRemoval = true
     )
     private List<FishCatch> fishCatches;
 
     @OneToMany(
             mappedBy = "user",
-            cascade=CascadeType.ALL
+            cascade=CascadeType.ALL,
+            orphanRemoval = true
     )
     private List<Comment> comments;
 
     @OneToMany(
             mappedBy = "user",
-            cascade=CascadeType.ALL
+            cascade=CascadeType.ALL,
+            orphanRemoval = true
     )
     private List<Location> locations;
 
@@ -109,6 +112,18 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "fish_catch_id"))
     private List<FishCatch> likedFishCatches;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_following",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_user_id")
+    )
+    private List<User> following;
+
+    @ManyToMany(mappedBy = "following", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> followers;
+
 
 
     public User(String firstName, String lastName, String email, String password, Role role) {

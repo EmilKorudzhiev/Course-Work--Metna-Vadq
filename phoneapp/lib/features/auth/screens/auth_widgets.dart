@@ -10,13 +10,29 @@ class AuthWidgets {
   }
 
   static Widget buildInputField(TextEditingController controller,
-      {isPassword = false}) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
-      ),
-      obscureText: isPassword,
+      {bool isPassword = false}) {
+    var _obscureText = isPassword;
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return TextField(
+          controller: controller,
+          obscureText: _obscureText,
+          decoration: InputDecoration(
+            suffixIcon: isPassword
+                ? IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility_off : Icons.visibility,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            )
+                : null,
+          ),
+        );
+      },
     );
   }
 

@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:MetnaVadq/features/posts/data/models/comment_model.dart';
 import 'package:MetnaVadq/features/posts/data/models/full_post_model.dart';
+import 'package:MetnaVadq/features/posts/data/models/location_model.dart';
+import 'package:MetnaVadq/features/posts/data/models/make_location_request_model.dart';
 import 'package:MetnaVadq/features/posts/service/post_repository.dart';
+import 'package:MetnaVadq/features/posts/data/models/make_post_request_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 final postControllerProvider = Provider((ref) {
   final postRepository = ref.read(postRepositoryProvider);
@@ -55,6 +61,29 @@ class PostController {
     } else {
       return false;
     }
+  }
+
+  Future<bool> makePostRequest(File image, String description, LatLng coordinates) async {
+    MakePostRequestModel request = MakePostRequestModel(description: description, latitude: coordinates.latitude, longitude: coordinates.longitude);
+    final response = await _postRepository.makePostRequest(image, request);
+    return response?.statusCode == 204;
+  }
+
+  Future<bool> makeLocationRequest(File image, String text, LatLng latLng, String dropdownValue) async {
+    MakeLocationRequestModel request = MakeLocationRequestModel(description: text, type: dropdownValue, latitude: latLng.latitude, longitude: latLng.longitude);
+    final response = await _postRepository.makeLocationRequest(image, request);
+    return response?.statusCode == 204;
+  }
+
+  Future<LocationModel> getLocation(int locationId) async {
+    final response = await _postRepository.getLocation(locationId);
+    LocationModel location = LocationModel.fromJson(response?.data);
+    return location;
+  }
+
+  Future<bool> deletePost(int postId) async {
+    final response = await _postRepository.deletePost(postId);
+    return response?.statusCode == 204;
   }
 
 }

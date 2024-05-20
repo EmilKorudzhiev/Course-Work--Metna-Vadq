@@ -2,6 +2,7 @@ import 'package:MetnaVadq/core/api/dio/api.dart';
 import 'package:MetnaVadq/core/api/endpoints.dart';
 import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
 import 'package:MetnaVadq/features/auth/models/login_request.dart';
+import 'package:MetnaVadq/features/auth/models/register_request.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class AuthController with ChangeNotifier {
     print(response);
     _secureStorage.setTokens(
         response.data['access_token'], response.data['refresh_token']);
+    _secureStorage.setIsAdmin(response.data['is_admin']);
     } on DioException catch (e) {
       /// TODO make it show snackbar when handling errors
       //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("fadsd")));
@@ -69,5 +71,23 @@ class AuthController with ChangeNotifier {
       //TODO manage exception
       print("You arent logged in.");
     }
+  }
+
+  Future<void> register(RegisterRequest registerRequest) async {
+    try {
+      final response = await _api.dio.post(Endpoints.REGISTER_ENDPOINT, data: {
+        'first-name': registerRequest.firstName,
+        'last-name': registerRequest.lastName,
+        'email': registerRequest.email,
+        'password': registerRequest.password,
+      });
+      print(response);
+      _secureStorage.setTokens(
+          response.data['access_token'], response.data['refresh_token']);
+      _secureStorage.setIsAdmin(response.data['is_admin']);
+    } on DioException catch (e) {
+      throw e;
+    }
+    notifyListeners();
   }
 }

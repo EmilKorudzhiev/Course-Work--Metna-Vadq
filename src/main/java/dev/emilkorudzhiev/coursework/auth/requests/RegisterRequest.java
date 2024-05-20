@@ -12,11 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
+
     @JsonProperty("first-name")
     private String firstName;
+
     @JsonProperty("last-name")
     private String lastName;
+
+    @JsonProperty("email")
     private String email;
+
+    @JsonProperty("password")
     private String password;
     private Role role;
 }

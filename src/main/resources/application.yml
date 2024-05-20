@@ -1,4 +1,12 @@
+server:
+  error:
+    include-message: always
+  port: 8080
+
 spring:
+  thymeleaf:
+    enabled: true
+    cache: false
   datasource:
     url: jdbc:postgresql://localhost:5432/course-work
     username: postgres
@@ -13,19 +21,18 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-server:
-  error:
-    include-message: always
-  port: 8080
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
 
 application:
   security:
     jwt:
       secret-key: 316c0a2a82b1cda7e48bfd32737b7d38043c574be0cbf92180f7a57fb35e5b40
-      expiration: 60000  #300000 # 5 min
+      expiration: 300_000
       refresh-token:
-        expiration: 86400000 # 1 day
+        expiration: 86_400_000
 
 cloud:
   aws:
@@ -35,7 +42,7 @@ cloud:
         users: course-work-users
         fishCatches: course-work-fish-catches
         locations: course-work-locations
-      max-file-size: 8388608 #8MB
+      max-file-size: 7_340_032
 
 app:
   constants:
@@ -45,3 +52,12 @@ app:
     users:
       likes-page-size: 20
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
+logging:
+  file:
+    name: logs/app.log

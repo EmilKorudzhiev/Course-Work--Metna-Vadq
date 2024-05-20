@@ -21,7 +21,6 @@ public class LocationController {
 
     private final LocationService locationService;
 
-    //GET CATCHES WITHOUT RECOMMENDATION ALGORITHM (ONLY FOR TESTING PURPOSES)
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<FullLocationDto>> getLocations(
@@ -30,6 +29,15 @@ public class LocationController {
     ) {
         Optional<List<FullLocationDto>> list = locationService.getLocations(pageSize, pageNumber);
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<FullLocationDto> getLocation(
+            @PathVariable Long id
+    ) {
+        Optional<FullLocationDto> location = locationService.getLocation(id);
+        return location.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("find-in-radius")

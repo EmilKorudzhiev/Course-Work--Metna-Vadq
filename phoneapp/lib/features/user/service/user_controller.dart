@@ -39,4 +39,26 @@ class UserController {
     }
   }
 
+  Future<bool> followUser(int id) async{
+   try {
+     final response = await _userRepository.followUser(id);
+
+      return response?.statusCode == 204;
+   } catch (e) {
+     print(e);
+     throw e;
+   }
+  }
+
+  Future<bool>  updateProfilePicture(String path) async{
+    try {
+      final response = await _userRepository.updateProfilePicture(path);
+
+      return response?.statusCode == 200;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
 }

@@ -18,6 +18,7 @@ class _CreatePostPageState extends ConsumerState<CameraPostPage> {
   late File _image;
   bool isFlashOn = false;
   bool isFrontCamera = false;
+  bool isPost = true;
 
   @override
   void initState() {
@@ -83,6 +84,7 @@ class _CreatePostPageState extends ConsumerState<CameraPostPage> {
               MaterialPageRoute(builder: (BuildContext context) {
             return CreatePostPage(
               image: _image,
+              isPost: isPost,
             );
           }));
         },
@@ -155,14 +157,44 @@ class _CreatePostPageState extends ConsumerState<CameraPostPage> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isFrontCamera = !isFrontCamera;
+                          });
+                          int cameraIndex = isFrontCamera ? 1 : 0;
+                          _initializeControllerFuture =
+                              _initializeCamera(cameraIndex);
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(50, 0, 0, 0),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: isFrontCamera
+                                ? const Icon(
+                                    Icons.camera_rear,
+                                    color: Colors.white,
+                                    size: 30,
+                                  )
+                                : const Icon(
+                                    Icons.camera_front,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          isFrontCamera = !isFrontCamera;
+                          isPost = !isPost;
                         });
-                        int cameraIndex = isFrontCamera ? 1 : 0;
-                        _initializeControllerFuture =
-                            _initializeCamera(cameraIndex);
                       },
                       child: Container(
                         decoration: const BoxDecoration(
@@ -171,20 +203,20 @@ class _CreatePostPageState extends ConsumerState<CameraPostPage> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: isFrontCamera
+                          child: isPost
                               ? const Icon(
-                                  Icons.camera_rear,
-                                  color: Colors.white,
-                                  size: 30,
-                                )
+                            Icons.post_add,
+                            color: Colors.white,
+                            size: 30,
+                          )
                               : const Icon(
-                                  Icons.camera_front,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
+                            Icons.house_siding,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

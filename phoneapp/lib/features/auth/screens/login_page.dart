@@ -62,15 +62,39 @@ class LoginPage extends ConsumerWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              ref
-                                  .read(authProvider.notifier)
-                                  .logIn(LoginRequest(emailController.text,
-                                      passwordController.text))
-                                  .then((value) => Navigator.push(
+                              if (emailController.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Моля въведете имейл.'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              } else if (passwordController.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Моля въведете парола.'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              } else {
+                                ref
+                                    .read(authProvider.notifier)
+                                    .logIn(LoginRequest(emailController.text, passwordController.text))
+                                    .then((value) => {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Влизането беше успешно!'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  ),
+                                  Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              NavigationBarWidget())));
+                                          builder: (context) => const NavigationBarWidget()
+                                      )
+                                  )
+                                });
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.black,

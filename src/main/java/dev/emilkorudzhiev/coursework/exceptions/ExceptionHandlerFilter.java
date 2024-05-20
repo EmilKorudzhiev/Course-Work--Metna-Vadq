@@ -30,6 +30,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             setErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, response, e);
             e.printStackTrace();
         }
+
     }
 
     public void setErrorResponse(HttpStatus status, HttpServletResponse response, Throwable ex){

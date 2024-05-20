@@ -35,4 +35,12 @@ class SecureStorageManager {
     await _storage.delete(key: 'access_token');
     await _storage.delete(key: 'refresh_token');
   }
+
+  Future<void> setIsAdmin(bool isAdmin) async {
+    await _storage.write(key: 'is_admin', value: isAdmin.toString());
+  }
+
+  Future<bool> isUserAdmin() async {
+    return await _storage.read(key: 'is_admin') == 'true';
+  }
 }

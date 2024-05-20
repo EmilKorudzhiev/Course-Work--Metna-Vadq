@@ -1,5 +1,6 @@
 import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/features/exceptions/gps_location_exception.dart';
+import 'package:MetnaVadq/features/posts/screens/individual_location_page.dart';
 import 'package:MetnaVadq/features/posts/screens/individual_post_page.dart';
 import 'package:MetnaVadq/features/search/data/location_marker_model.dart';
 import 'package:MetnaVadq/features/search/data/post_marker_model.dart';
@@ -312,7 +313,7 @@ class MapSearchPage extends ConsumerWidget {
                                     .state =
                                     LatLng(location.latitude, location.longitude);
                               },
-                              child: const Text('Поднови'),
+                              child: const Text('Поднови', style: TextStyle(color: Colors.black)),
                             ),
                             ElevatedButton(
                                 onPressed: () {
@@ -321,7 +322,7 @@ class MapSearchPage extends ConsumerWidget {
                                           location.latitude, location.longitude),
                                       12.5);
                                 },
-                                child: const Text("Центрирай")),
+                                child: const Text("Центрирай", style: TextStyle(color: Colors.black))),
                           ],
                         );
                       } else if (!gpsMapSearch && searchedLocation != null) {
@@ -335,7 +336,7 @@ class MapSearchPage extends ConsumerWidget {
                                           searchedLocation.longitude),
                                       12.5);
                                 },
-                                child: const Text("Центрирай")),
+                                child: const Text("Центрирай", style: TextStyle(color: Colors.black))),
                           ],
                         );
                       } else {
@@ -419,11 +420,12 @@ class MapSearchPage extends ConsumerWidget {
                                           },
                                         ),
                                         onPressed: () {
-                                          //TODO take to the location post page
-                                          print(
-                                              "Working location ID: ${element.id}" +
-                                                  locationMarkerResults.length
-                                                      .toString());
+                                          Navigator.of(context, rootNavigator:true).push( // ensures fullscreen
+                                              MaterialPageRoute(
+                                                  builder: (BuildContext context) {
+                                                    return IndividualLocationPage(element.id);
+                                                  }
+                                              ) );
                                         },
                                       ),
                                     ))

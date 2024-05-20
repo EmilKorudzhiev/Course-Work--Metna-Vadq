@@ -28,7 +28,7 @@ public class CommentController {
         return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping()
     @PreAuthorize("hasAnyAuthority('admin:create', 'user:create')")
     public ResponseEntity<Void> postComment(
             @RequestBody CommentRequest request

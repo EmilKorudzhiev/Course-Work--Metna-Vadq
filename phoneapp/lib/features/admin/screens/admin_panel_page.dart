@@ -1,21 +1,21 @@
 import 'package:MetnaVadq/core/aws/aws.dart';
-import 'package:MetnaVadq/features/auth/service/auth_controller.dart';
 import 'package:MetnaVadq/features/posts/data/models/full_post_model.dart';
+import 'package:MetnaVadq/features/posts/screens/feed_widgets.dart';
 import 'package:MetnaVadq/features/posts/screens/individual_post_page.dart';
 import 'package:MetnaVadq/features/posts/service/feed_post_notifier.dart';
-import 'package:MetnaVadq/features/posts/service/individual_post_notifier.dart';
-import 'package:MetnaVadq/features/posts/service/post_controller.dart';
 import 'package:MetnaVadq/features/user/screens/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:MetnaVadq/features/posts/screens/feed_widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FeedPage extends ConsumerStatefulWidget {
+class AdminPanelPage extends ConsumerStatefulWidget {
+
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _FeedPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AdminPanelPageState();
+
 }
 
-class _FeedPageState extends ConsumerState<FeedPage> {
+class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
+
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -42,9 +42,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Metna-vadq'),
-        centerTitle: true,
+        title: const Text("Админ панел"),
       ),
       body: Column(
         children: [
@@ -63,7 +61,7 @@ class _FeedPageState extends ConsumerState<FeedPage> {
                   itemCount: posts.length + 1,
                   itemBuilder: (context, index) {
                     if (index < posts.length) {
-                      return PostCard(post: posts[index]);
+                      return AdminPostCard(post: posts[index]);
                     } else if (index == posts.length - 1 &&
                         posts.length % 10 == 0) {
                       return const Padding(
@@ -86,10 +84,11 @@ class _FeedPageState extends ConsumerState<FeedPage> {
   }
 }
 
-class PostCard extends ConsumerWidget {
+
+class AdminPostCard extends ConsumerWidget {
   FullPostModel post;
 
-  PostCard({Key? key, required this.post}) : super(key: key);
+  AdminPostCard({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -146,7 +145,7 @@ class PostCard extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-              post.description == "" ? "Публикацията няма описание." : post.description!,
+              post.description,
               style: const TextStyle(
                 fontSize: 16.0,
               ),
@@ -159,20 +158,20 @@ class PostCard extends ConsumerWidget {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   final postNotifier =
-                      ref.watch(feedPostNotifierProvider.notifier);
+                  ref.watch(feedPostNotifierProvider.notifier);
                   final like = postNotifier.getPostById(post.id);
                   return IconButton(
                     icon: like.isLiked
                         ? const Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                            size: 30,
-                          )
+                      Icons.favorite,
+                      color: Colors.red,
+                      size: 30,
+                    )
                         : const Icon(
-                            Icons.favorite,
-                            color: Colors.grey,
-                            size: 30,
-                          ),
+                      Icons.favorite,
+                      color: Colors.grey,
+                      size: 30,
+                    ),
                     onPressed: () async {
                       await postNotifier.likePost(post.id);
                     },
@@ -190,6 +189,16 @@ class PostCard extends ConsumerWidget {
                       .push(MaterialPageRoute(builder: (BuildContext context) {
                     return IndividualPostPage(post.id);
                   }));
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.delete,
+                  size: 30,
+                ),
+                color: Colors.grey,
+                onPressed: () {
+                  ref.read(feedPostNotifierProvider.notifier).deletePost(post.id);
                 },
               ),
             ],

@@ -17,8 +17,8 @@ public class UserConfig {
         return args -> {
 
             var admin = RegisterRequest.builder()
-                    .firstName("Admin")
-                    .lastName("Admin")
+                    .firstName("Ivan")
+                    .lastName("Ivanov")
                     .email("Admin@abv.bg")
                     .password("1234")
                     .role(Role.ADMIN)

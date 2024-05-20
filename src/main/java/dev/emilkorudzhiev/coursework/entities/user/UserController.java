@@ -20,8 +20,6 @@ public class UserController {
 
     private final UserService userService;
 
-    // TODO : FIX UP RESPONSES AND REQUESTS
-
     @GetMapping()
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<PartialUserDto> getUser(
@@ -93,10 +91,36 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("following")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<PartialUserDto>> getUserFollowing(
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNumber
+    ) {
+        Optional<List<PartialUserDto>> list = userService.getUserFollowing(userId, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    @GetMapping("followers")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<PartialUserDto>> getUserFollowers(
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNumber
+    ) {
+        Optional<List<PartialUserDto>> list = userService.getUserFollowers(userId, pageNumber);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    @PutMapping("follow/{userId}")
+    @PreAuthorize("hasAnyAuthority('admin:update', 'user:update')")
+    public ResponseEntity<Void> userFollow(
+            @PathVariable("userId") Long userId
+    ) {
+        userService.followUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 
-//todo fix this make admin only
+//todo fix this and make admin can delete anyone
     @DeleteMapping(path = "{userId}")
     @PreAuthorize("hasAnyAuthority('admin:delete', 'user:delete')")
     public ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {

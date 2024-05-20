@@ -6,6 +6,7 @@ import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatchRepository;
 import dev.emilkorudzhiev.coursework.entities.fishcatch.PartialFishCatchDto;
 import dev.emilkorudzhiev.coursework.exceptions.EmailTakenException;
+import dev.emilkorudzhiev.coursework.exceptions.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,20 +47,24 @@ public class UserService {
         return userOptional.get().getId();
     }
 
-
-
     public Optional<PartialUserDto> getSelf() {
         return getCurrentUser().map(PartialUserDto::new);
     }
 
     public Optional<PartialUserDto> getUser(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        return optionalUser.map(PartialUserDto::new);
+        return userRepository.findById(userId).map(user -> {
+            PartialUserDto dto = new PartialUserDto(user);
+            dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+            return dto;
+        });
     }
 
     public List<FullUserDto> getUsers() {
-        List<User> userList = userRepository.findAll();
-        return userList.stream().map(FullUserDto::new).toList();
+        return userRepository.findAll().stream().map(user -> {
+                    FullUserDto dto = new FullUserDto(user);
+                    dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+                    return dto;
+                }).toList();
     }
 
     public boolean deleteSelf() {
@@ -79,8 +84,9 @@ public class UserService {
         UUID imageId = UUID.randomUUID();
 
         if(image.isEmpty())
-            throw new RuntimeException("No image attached.");
-        if(!Set.of("image/png","image/jpeg").contains(image.getContentType()))
+            throw new RuntimeException("No file attached.");
+        System.out.println(image.getContentType());
+        if(!Set.of("image/png", "image/jpeg", "image/jpg").contains(image.getContentType()))
             throw new RuntimeException("File format not supported.");
         if (image.getSize() > maxImageSize)
             throw new RuntimeException("Image size is too large.");
@@ -115,14 +121,13 @@ public class UserService {
 
     public String getUserProfileImageUrl() {
         Optional<User> user = getCurrentUser();
-        String imageId = user.get().getProfileImage().toString();
 
-        // TODO make good exceptions
-        if(imageId == null) {
-            throw new RuntimeException("No picture found for user.");
+        if(user.get().getProfileImage() != null) {
+            String imageId = user.get().getProfileImage().toString();
+            return imageId;
         }
 
-        return imageId;
+        return "null";
     }
 
     public Optional<List<PartialFishCatchDto>> getUserLikesById(Long userId, Integer pageNumber) {
@@ -148,7 +153,63 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Optional<List<PartialUserDto>> getUserFollowing(Long userId, Integer pageNumber) {
+        if (userId == null) {
+            return userRepository.findUserFollowingByUserId(getCurrentUserId(), PageRequest.of(pageNumber, pageSize))
+                    .map(users -> users.stream().map(user -> {
+                        PartialUserDto dto = new PartialUserDto(user);
+                        dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+                        return dto;
+                    }).toList());
+        } else {
+            return userRepository.findUserFollowingByUserId(userId, PageRequest.of(pageNumber, pageSize))
+                    .map(users -> users.stream().map(user -> {
+                        PartialUserDto dto = new PartialUserDto(user);
+                        dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+                        return dto;
+                    }).toList());
+        }
+    }
 
+    public Optional<List<PartialUserDto>> getUserFollowers(Long userId, Integer pageNumber) {
+        if (userId == null) {
+            return userRepository.findUserFollowersByUserId(getCurrentUserId(), PageRequest.of(pageNumber, pageSize))
+                    .map(users -> users.stream().map(user -> {
+                        PartialUserDto dto = new PartialUserDto(user);
+                        dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+                        return dto;
+                    }).toList());
+        } else {
+            return userRepository.findUserFollowersByUserId(userId, PageRequest.of(pageNumber, pageSize))
+                    .map(users -> users.stream().map(user -> {
+                        PartialUserDto dto = new PartialUserDto(user);
+                        dto.setFollowingHim(user.getFollowers().stream().anyMatch(follower -> follower.getId().equals(getCurrentUserId())));
+                        return dto;
+                    }).toList());
+        }
+    }
+
+    public void followUser(Long userId) {
+        User user = getCurrentUser().get();
+        Optional<User> userToFollow = userRepository.findById(userId);
+
+        if (userToFollow.isEmpty()) {
+            throw new UserNotFoundException(userId);
+        }
+
+        if (user.getFollowing().contains(userToFollow.get())) {
+            user.getFollowing().remove(userToFollow.get());
+            userToFollow.get().getFollowers().remove(user);
+            userRepository.save(user);
+            userRepository.save(userToFollow.get());
+            return;
+        }
+
+        user.getFollowing().add(userToFollow.get());
+        userToFollow.get().getFollowers().add(user);
+        userRepository.save(user);
+        userRepository.save(userToFollow.get());
+    }
 
     public boolean deleteUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -203,5 +264,6 @@ public class UserService {
 
         return updated;
     }
+
 
 }

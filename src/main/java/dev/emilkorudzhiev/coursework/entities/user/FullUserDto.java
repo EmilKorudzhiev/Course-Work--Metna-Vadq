@@ -21,6 +21,9 @@ public class FullUserDto {
     private UUID profilePicture;
     private Role role;
     private List<PartialFishCatchDto> fishCatches;
+    private int followersCount;
+    private boolean followingHim;
+    private int catchCount;
 
     public FullUserDto(User user) {
         this.id = user.getId();
@@ -30,6 +33,8 @@ public class FullUserDto {
         this.profilePicture = user.getProfileImage();
         this.role = user.getRole();
         this.fishCatches = user.getFishCatches().stream().map(PartialFishCatchDto::new).toList();
+        this.followersCount = user.getFollowers().size();
+        this.catchCount = user.getFishCatches().size();
     }
 
 }

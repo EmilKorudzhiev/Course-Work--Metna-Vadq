@@ -13,7 +13,7 @@ class NavigationBarWidget extends ConsumerWidget {
   const NavigationBarWidget({super.key});
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const FeedPage(),
+    FeedPage(),
     const MapSearchPage(),
     const CameraPostPage(),
     ProfilePage(null),

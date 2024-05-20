@@ -26,6 +26,7 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse register(RegisterRequest request) {
+        System.out.println(request.toString());
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -43,6 +44,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
+                .isAdmin(user.getRole().equals(Role.ADMIN))
                 .build();
     }
 
@@ -65,6 +67,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
+                .isAdmin(user.getRole().equals(Role.ADMIN))
                 .build();
     }
 
@@ -87,6 +90,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
+                .isAdmin(user.getRole().equals(Role.ADMIN))
                 .build();
     }
 
@@ -109,6 +113,7 @@ public class AuthenticationService {
                         .accessToken(accessToken)
                         .accessTokenValidity(validityOfToken)
                         .refreshToken(refreshToken)
+                        .isAdmin(userDetails.getRole().equals(Role.ADMIN))
                         .build();
             }
         }
