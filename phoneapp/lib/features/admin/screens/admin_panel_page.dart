@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdminPanelPage extends ConsumerStatefulWidget {
+  const AdminPanelPage({super.key});
+
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AdminPanelPageState();
@@ -88,12 +90,12 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> {
 class AdminPostCard extends ConsumerWidget {
   FullPostModel post;
 
-  AdminPostCard({Key? key, required this.post}) : super(key: key);
+  AdminPostCard({super.key, required this.post});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       elevation: 4.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -143,7 +145,7 @@ class AdminPostCard extends ConsumerWidget {
             fit: BoxFit.cover,
           ),
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Text(
               post.description,
               style: const TextStyle(
@@ -151,7 +153,7 @@ class AdminPostCard extends ConsumerWidget {
               ),
             ),
           ),
-          Divider(),
+          const Divider(),
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: [

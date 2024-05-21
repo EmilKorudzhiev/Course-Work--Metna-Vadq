@@ -7,6 +7,7 @@ import dev.emilkorudzhiev.coursework.entities.fishcatch.requests.SearchRadiusReq
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.entities.user.UserRepository;
 import dev.emilkorudzhiev.coursework.entities.user.UserService;
+import dev.emilkorudzhiev.coursework.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -124,7 +125,7 @@ public class FishCatchService {
     public boolean deleteFishCatch(Long fishCatchId) {
         User user = userService.getCurrentUser().get();
         Optional<FishCatch> fishCatch = fishCatchRepository.findById(fishCatchId);
-        if (!user.getId().equals(fishCatch.get().getUser().getId())) {
+        if (!user.getId().equals(fishCatch.get().getUser().getId()) && !user.getRole().equals(Role.ADMIN)) {
             return false;
         }else {
             fishCatchRepository.deleteById(fishCatchId);

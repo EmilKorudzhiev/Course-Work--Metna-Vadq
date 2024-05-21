@@ -86,4 +86,9 @@ class PostController {
     return response?.statusCode == 204;
   }
 
+  Future<bool> deleteLocation(int id) async {
+    final response = await _postRepository.deleteLocation(id);
+    return response?.statusCode == 204;
+  }
+
 }

@@ -45,6 +45,7 @@ public class AuthenticationService {
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
                 .isAdmin(user.getRole().equals(Role.ADMIN))
+                .userId(user.getId())
                 .build();
     }
 
@@ -68,6 +69,7 @@ public class AuthenticationService {
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
                 .isAdmin(user.getRole().equals(Role.ADMIN))
+                .userId(user.getId())
                 .build();
     }
 
@@ -91,6 +93,7 @@ public class AuthenticationService {
                 .accessTokenValidity(validityOfJwtToken)
                 .refreshToken(refreshToken)
                 .isAdmin(user.getRole().equals(Role.ADMIN))
+                .userId(user.getId())
                 .build();
     }
 
@@ -114,6 +117,7 @@ public class AuthenticationService {
                         .accessTokenValidity(validityOfToken)
                         .refreshToken(refreshToken)
                         .isAdmin(userDetails.getRole().equals(Role.ADMIN))
+                        .userId(userDetails.getId())
                         .build();
             }
         }

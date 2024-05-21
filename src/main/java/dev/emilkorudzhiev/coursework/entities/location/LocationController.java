@@ -40,6 +40,17 @@ public class LocationController {
         return location.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("user")
+    @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
+    public ResponseEntity<List<FullLocationDto>> getUserLocations(
+            @RequestParam(name = "page-size", defaultValue = "15", required = false) Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(name = "user-id", required = false) Long userId
+    ) {
+        Optional<List<FullLocationDto>> list = locationService.getUserLocations(pageSize, pageNumber, userId);
+        return list.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("find-in-radius")
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<List<MarkerLocationDto>> getLocationsInRadius(
@@ -59,5 +70,15 @@ public class LocationController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('admin:delete', 'user:delete')")
+    public ResponseEntity<Void> deleteLocation(
+            @PathVariable Long id
+    ) {
+        boolean deleted = locationService.deleteLocation(id);
+        return deleted ?
+                ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
 
 }

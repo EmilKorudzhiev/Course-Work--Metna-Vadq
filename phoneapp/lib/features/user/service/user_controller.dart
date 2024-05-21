@@ -1,3 +1,4 @@
+import 'package:MetnaVadq/features/posts/data/models/location_model.dart';
 import 'package:MetnaVadq/features/posts/data/models/partial_post_model.dart';
 import 'package:MetnaVadq/features/user/data/user_model.dart';
 import 'package:MetnaVadq/features/user/service/user_repository.dart';
@@ -60,5 +61,20 @@ class UserController {
       throw e;
     }
   }
+
+  Future<List<LocationModel>> getUserLocations(int? id, page, int limit) async {
+    try {
+      final response = await _userRepository.getUserLocations(id, page, limit);
+
+      List<LocationModel> userLocations = (response?.data as List).map((e) => LocationModel.fromJson(e)).toList();
+
+      return userLocations;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+
 
 }

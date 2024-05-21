@@ -23,4 +23,7 @@ public class AuthenticationResponse {
     @JsonProperty("is_admin")
     private boolean isAdmin;
 
+    @JsonProperty("id")
+    private Long userId;
+
 }

@@ -1,5 +1,6 @@
 import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/core/aws/aws.dart';
+import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
 import 'package:MetnaVadq/features/posts/data/models/location_model.dart';
 import 'package:MetnaVadq/features/posts/screens/feed_widgets.dart';
 import 'package:MetnaVadq/features/posts/service/comments_notifier.dart';
@@ -111,10 +112,59 @@ class _IndividualLocationPageState
                           ),
                         ),
                         Text(
-                          location.description,
+                          location.description == ""
+                              ? "Локацията няма описание."
+                              : location.description!,
                           style: const TextStyle(
                             fontSize: 16,
                           ),
+                        ),
+                        FutureBuilder(
+                          future: Future.wait([
+                            ref.read(secureStorageProvider).getUserId(),
+                            ref.read(secureStorageProvider).isUserAdmin(),
+                          ]),
+                          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
+                              );
+                            }
+
+                            final String userId = snapshot.data![0];
+                            final bool isAdmin = snapshot.data![1];
+
+                            if (userId != location.user.id.toString() && !isAdmin) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Center(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  bool isDeleted = await ref
+                                      .read(postControllerProvider)
+                                      .deleteLocation(location.id);
+
+                                  if (isDeleted) {
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'Локацията беше успешно изтрита!')));
+                                  }
+                                },
+                                child: const Text(
+                                  'Изтрий локацията',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

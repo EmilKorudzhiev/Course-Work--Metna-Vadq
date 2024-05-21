@@ -1,8 +1,10 @@
 import 'package:MetnaVadq/assets/colors.dart';
 import 'package:MetnaVadq/core/aws/aws.dart';
+import 'package:MetnaVadq/core/secure_storage/secure_storage_manager.dart';
 import 'package:MetnaVadq/features/posts/screens/feed_widgets.dart';
 import 'package:MetnaVadq/features/posts/service/comments_notifier.dart';
 import 'package:MetnaVadq/features/posts/service/individual_post_notifier.dart';
+import 'package:MetnaVadq/features/posts/service/post_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,7 +131,9 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              post.description == "" ? "Публикацията няма описание." : post.description!,
+                              post.description == ""
+                                  ? "Публикацията няма описание."
+                                  : post.description!,
                               style: const TextStyle(
                                 fontSize: 16,
                               ),
@@ -138,6 +142,56 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                         ),
                       ),
                       const Divider(),
+                      FutureBuilder(
+                        future: Future.wait([
+                          ref.read(secureStorageProvider).getUserId(),
+                          ref.read(secureStorageProvider).isUserAdmin(),
+                        ]),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<dynamic>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          }
+
+                          final String userId = snapshot.data?[0];
+                          final bool isAdmin = snapshot.data?[1];
+                          print("AAAAAAAAA" + isAdmin.toString());
+
+                          if (userId == post.user.id.toString() || isAdmin) {
+                            return Center(
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  bool isDeleted = await ref
+                                      .read(postControllerProvider)
+                                      .deletePost(post.id);
+
+                                  if (isDeleted) {
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Публикацията беше изтрита успешно!')));
+                                  }
+                                },
+                                child: const Text(
+                                  'Изтрий публикация',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
+                      ),
                       Center(
                         child: ElevatedButton(
                             onPressed: () {
@@ -308,8 +362,8 @@ class _IndividualPostPageState extends ConsumerState<IndividualPostPage> {
                                       Marker(
                                         width: 80.0,
                                         height: 80.0,
-                                        point:
-                                            LatLng(post.latitude, post.longitude),
+                                        point: LatLng(
+                                            post.latitude, post.longitude),
                                         child: const Icon(
                                           Icons.location_on,
                                           color: AppColors.primary,

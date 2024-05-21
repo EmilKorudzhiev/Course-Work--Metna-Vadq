@@ -224,10 +224,26 @@ class PostRepository {
 
   Future<Response?> deletePost(int postId) async {
     try {
-      _api.dio.delete("${Endpoints.DELETE_POST_ENDPOINT}/$postId",
+      final response = _api.dio.delete("${Endpoints.DELETE_POST_ENDPOINT}/$postId",
           options: Options(headers: {
             "Authorization": "Bearer ${await _storage.getAccessToken()}"
           }));
+      return response;
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      print("ERROR!!!!!!");
+      print(e);
+    }
+  }
+
+  Future<Response?> deleteLocation(int id) async {
+    try {
+      final response = _api.dio.delete("${Endpoints.DELETE_LOCATION_ENDPOINT}/$id",
+          options: Options(headers: {
+            "Authorization": "Bearer ${await _storage.getAccessToken()}"
+          }));
+      return response;
     } on DioException catch (e) {
       rethrow;
     } catch (e) {

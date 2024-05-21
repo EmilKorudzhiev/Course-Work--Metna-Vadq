@@ -197,6 +197,7 @@ class ProfilePageState extends ConsumerState<ProfilePage> {
                         Expanded(
                           child: TabBarView(
                             children: [
+                              //TODO fix them to be pageable
                               FutureBuilder(
                                 future: ref
                                     .watch(userControllerProvider)
@@ -221,8 +222,30 @@ class ProfilePageState extends ConsumerState<ProfilePage> {
                                       });
                                 },
                               ),
-                              Text("Локации"),
-                              //TODO tva :)
+                              FutureBuilder(
+                                future: ref
+                                    .watch(userControllerProvider)
+                                    .getUserLocations(userId, 0, 15),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data == null) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  var location = snapshot.data!;
+                                  return GridView.builder(
+                                      gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        crossAxisSpacing: 4.0,
+                                        mainAxisSpacing: 4.0,
+                                      ),
+                                      itemCount: location.length,
+                                      itemBuilder: (context, index) {
+                                        return SmallLocationCard(location: location[index]);
+                                      });
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -256,6 +279,12 @@ class SmallPostCard extends StatelessWidget {
         },
         child: Container(
           margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: AppColors.tertiary, // Border color
+              width: 2.0, // Border width
+            ),
+          ),
           child: Image.network(
             "${AWS.POST_IMAGE_URL}${post.id}/${post.imageUrl}",
             fit: BoxFit.cover,
@@ -284,6 +313,12 @@ class SmallLocationCard extends StatelessWidget {
         },
         child: Container(
           margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: AppColors.tertiary, // Border color
+              width: 2.0, // Border width
+            ),
+          ),
           child: Image.network(
             "${AWS.LOCATION_IMAGE_URL}${location.id}/${location.imageUrl}",
             fit: BoxFit.cover,

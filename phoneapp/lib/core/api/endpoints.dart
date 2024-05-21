@@ -12,7 +12,6 @@ class Endpoints {
 
   //User
   static const GET_USER_PROFILE = '$URL/user';
-  static const GET_USER_POSTS = '$URL/fish-catch/user';
   static const FOLLOW_USER_ENDPOINT = '$URL/user/follow';
   static const UPDATE_PROFILE_PICTURE_ENDPOINT = '$URL/user/profile-image';
 
@@ -22,6 +21,7 @@ class Endpoints {
   static const GET_POSTS_BY_RADIUS_ENDPOINT = '$URL/fish-catch/find-in-radius';
   static const ADD_POST_ENDPOINT = '$URL/fish-catch';
   static const DELETE_POST_ENDPOINT = '$URL/fish-catch';
+  static const GET_USER_POSTS = '$URL/fish-catch/user';
 
   //Fish catches comments
   static const GET_COMMENTS_PAGEABLE_ENDPOINT = '$URL/comment';
@@ -34,5 +34,7 @@ class Endpoints {
   static const GET_LOCATION_ENDPOINT = '$URL/location';
   static const GET_LOCATIONS_BY_RADIUS_ENDPOINT = '$URL/location/find-in-radius';
   static const ADD_LOCATION_ENDPOINT = '$URL/location';
+  static const GET_USER_LOCATIONS = '$URL/location/user';
+  static const DELETE_LOCATION_ENDPOINT = '$URL/location';
 
 }

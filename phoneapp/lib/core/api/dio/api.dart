@@ -39,7 +39,10 @@ class DioClient {
             "Content-Type": "application/json",
             "Authorization": "Bearer $refreshToken",
           }));
-      _storage.setAccessToken(response.data['access_token']);
+      _storage.setTokens(
+          response.data['access_token'], response.data['refresh_token']);
+      _storage.setIsAdmin(response.data['is_admin']);
+      _storage.setUserId(response.data['id']);
     } on DioException catch (e) {
       //manage exception if Refresh token expired prompt to log in again
       if ((e.response?.statusCode == 401) &&

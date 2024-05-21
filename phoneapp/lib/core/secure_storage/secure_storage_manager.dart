@@ -43,4 +43,13 @@ class SecureStorageManager {
   Future<bool> isUserAdmin() async {
     return await _storage.read(key: 'is_admin') == 'true';
   }
+
+  Future<void> setUserId(int userId) async {
+    await _storage.write(key: 'user_id', value: userId.toString());
+  }
+
+  Future<String?> getUserId() async {
+    return await _storage.read(key: 'user_id');
+  }
+
 }

@@ -9,6 +9,7 @@ import dev.emilkorudzhiev.coursework.entities.location.requests.LocationRequest;
 import dev.emilkorudzhiev.coursework.entities.user.User;
 import dev.emilkorudzhiev.coursework.entities.user.UserService;
 import dev.emilkorudzhiev.coursework.enums.LocationType;
+import dev.emilkorudzhiev.coursework.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -40,6 +41,13 @@ public class LocationService {
     public Optional<List<FullLocationDto>> getLocations(Integer pageSize, Integer pageNumber) {
         return locationRepository
                 .findLocationPageable(PageRequest.of(pageNumber, pageSize))
+                .map(locations -> locations.stream().map(FullLocationDto::new).toList());
+    }
+
+    public Optional<List<FullLocationDto>> getUserLocations(Integer pageSize, Integer pageNumber, Long userId) {
+        if (userId == null) userId = userService.getCurrentUserId();
+        return locationRepository
+                .findLocationsByUserId(userId, PageRequest.of(pageNumber, pageSize))
                 .map(locations -> locations.stream().map(FullLocationDto::new).toList());
     }
 
@@ -84,4 +92,16 @@ public class LocationService {
     public Optional<FullLocationDto> getLocation(Long id) {
         return locationRepository.findById(id).map(FullLocationDto::new);
     }
+
+    public boolean deleteLocation(Long id) {
+        Optional<Location> location = locationRepository.findById(id);
+        if (location.isEmpty()) return false;
+        User user = userService.getCurrentUser().get();
+        if (!user.getId().equals(location.get().getUser().getId()) && !user.getRole().equals(Role.ADMIN)) {
+            return false;
+        }
+        locationRepository.delete(location.get());
+        return true;
+    }
+
 }

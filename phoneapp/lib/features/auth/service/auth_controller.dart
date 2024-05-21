@@ -37,6 +37,7 @@ class AuthController with ChangeNotifier {
     _secureStorage.setTokens(
         response.data['access_token'], response.data['refresh_token']);
     _secureStorage.setIsAdmin(response.data['is_admin']);
+    _secureStorage.setUserId(response.data['id']);
     } on DioException catch (e) {
       /// TODO make it show snackbar when handling errors
       //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("fadsd")));
@@ -59,7 +60,10 @@ class AuthController with ChangeNotifier {
               "Content-Type": "application/json",
               "Authorization": "Bearer $refreshToken",
             }));
-        _secureStorage.setAccessToken(response.data['access_token']);
+        _secureStorage.setTokens(
+            response.data['access_token'], response.data['refresh_token']);
+        _secureStorage.setIsAdmin(response.data['is_admin']);
+        _secureStorage.setUserId(response.data['id']);
       } on DioException catch (e) {
         //TODO manage exception if Refresh token expired prompt to log in again
         if ((e.response?.statusCode == 401) &&
@@ -85,6 +89,7 @@ class AuthController with ChangeNotifier {
       _secureStorage.setTokens(
           response.data['access_token'], response.data['refresh_token']);
       _secureStorage.setIsAdmin(response.data['is_admin']);
+      _secureStorage.setUserId(response.data['id']);
     } on DioException catch (e) {
       throw e;
     }

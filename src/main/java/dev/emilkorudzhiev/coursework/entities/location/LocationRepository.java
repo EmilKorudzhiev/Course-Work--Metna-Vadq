@@ -1,6 +1,7 @@
 package dev.emilkorudzhiev.coursework.entities.location;
 
 import dev.emilkorudzhiev.coursework.entities.fishcatch.FishCatch;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface LocationRepository extends JpaRepository<Location,Long> {
             nativeQuery = true
     )
     Optional<List<Location>> findLocationsInRadius(Double latitude, Double longitude, Long distanceMeters);
+
+    @Query("SELECT l FROM Location l WHERE l.user.id = :userId")
+    Optional<List<Location>> findLocationsByUserId(Long userId, PageRequest of);
 }
